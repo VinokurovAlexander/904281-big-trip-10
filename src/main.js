@@ -23,7 +23,7 @@ const createTripControlsTabsTemplate = () => {
       <a class="trip-tabs__btn" href="#">Stats</a>
     </nav>`
   );
-}
+};
 
 const tripControlsBlock = document.querySelector(`.trip-controls`);
 render(tripControlsBlock, createTripControlsTabsTemplate(), `afterbegin`);
