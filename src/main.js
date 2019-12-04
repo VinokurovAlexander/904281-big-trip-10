@@ -1,9 +1,15 @@
 import {createTripInfoTemplate} from './components/trip-info';
 import {createTripControlsTabsTemplate} from './components/trip-controls';
-import {createTripFiltersTemplate} from './components/trip-filters';
-import {createTripSortTemplate} from './components/trip-sort';
-import {createTripListTemplate} from './components/trip-list';
+import {createTripFiltersListTemplate} from './components/trip-filters';
+import {createTripSortListTemplate} from './components/trip-sort';
+import {createEventListTemplate} from './components/trip-list';
+import {generateEvents} from './mock/event';
+import {controls} from "./mock/controls";
+import {filters} from "./mock/filters";
+import {sortItems} from "./mock/sort";
 
+const EVENTS_COUNT = 3;
+const events = generateEvents(EVENTS_COUNT);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -13,9 +19,10 @@ const tripInfoBlock = document.querySelector(`.trip-info`);
 render(tripInfoBlock, createTripInfoTemplate(), `afterbegin`);
 
 const tripControlsBlock = document.querySelector(`.trip-controls`);
-render(tripControlsBlock, createTripControlsTabsTemplate(), `afterbegin`);
-render(tripControlsBlock, createTripFiltersTemplate(), `beforeend`);
+render(tripControlsBlock, createTripControlsTabsTemplate(controls), `afterbegin`);
+render(tripControlsBlock, createTripFiltersListTemplate(filters), `beforeend`);
 
 const tripEventsBlock = document.querySelector(`.trip-events`);
-render(tripEventsBlock, createTripSortTemplate(), `afterbegin`);
-render(tripEventsBlock, createTripListTemplate(), `beforeend`);
+render(tripEventsBlock, createTripSortListTemplate(sortItems), `afterbegin`);
+
+render(tripEventsBlock, createEventListTemplate(events), `beforeend`);
