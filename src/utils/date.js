@@ -1,3 +1,10 @@
+/**
+ * Возвращает время в формате hh:mm.
+ *
+ * @param {object} date - Объект Date.
+ * @return {string} Время в формате HH:mm.
+ *
+ */
 const getTime = (date) => {
   let minutes = date.getMinutes();
   let hours = date.getHours();
@@ -13,6 +20,14 @@ const getTime = (date) => {
   return `${hours}:${minutes}`;
 };
 
+/**
+ * Возвращает дату и время.
+ *
+ * @param {object} date - Объект Date.
+ * @param {boolean} isForm - Ключ для возвращения даты и времени в формате для отображения в форме.
+ * @return {string} Дата в формате 2019-03-18T10:30, если isForm - 18/03/19 12:25.
+ *
+ */
 const getDate = (date, isForm = false) => {
   let year = date.getFullYear();
   let month = date.getMonth() + 1;
@@ -33,6 +48,14 @@ const getDate = (date, isForm = false) => {
   return `${year}-${month}-${day}T${time}`;
 };
 
+/**
+ * Возвращает разницу во времени между датами.
+ *
+ * @param {object} firstDate - Объект Date начальное время.
+ * @param {object} secondDate - Объект Date конечное время.
+ * @return {string} Время в формате 13H:25M.
+ *
+ */
 const getDuration = (firstDate, secondDate) => {
   const duration = secondDate - firstDate;
   const durationHours = Math.floor(duration / 3600000);

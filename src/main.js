@@ -7,13 +7,10 @@ import {generateEvents} from './mock/event';
 import {controls} from "./mock/controls";
 import {filters} from "./mock/filters";
 import {sortItems} from "./mock/sort";
+import {render, RenderPosition} from "./utils/render";
 
 const EVENTS_COUNT = 3;
 const events = generateEvents(EVENTS_COUNT);
-
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 const tripInfoBlock = document.querySelector(`.trip-info`);
 render(tripInfoBlock, createTripInfoTemplate(), `afterbegin`);
