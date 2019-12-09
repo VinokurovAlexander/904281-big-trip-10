@@ -1,3 +1,5 @@
+import {createElement} from "../utils/utils";
+
 const createTripFilterTemplate = (filter) => (
   `<div class="trip-filters__filter">
       <input id="filter-${filter.value.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter.value}.toLowerCase()" ${filter.checked}>
@@ -15,4 +17,26 @@ const createTripFiltersListTemplate = (filters) => {
     </form>`
   );
 };
-export {createTripFiltersListTemplate};
+
+export default class TripFilters {
+  constructor(filters) {
+    this._element = null;
+    this._filters = filters;
+  }
+
+  getTemplate() {
+    return createTripFiltersListTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

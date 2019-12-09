@@ -1,3 +1,5 @@
+import {createElement} from "../utils/utils";
+
 const createTripSortItemTemplate = (sortItem) => (
   `<div class="trip-sort__item  trip-sort__item--${sortItem.value.toLowerCase()}">
     <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${sortItem.value.toLowerCase()}" ${sortItem.isChecked}>
@@ -23,4 +25,25 @@ const createTripSortListTemplate = (sortList) => {
 };
 
 
-export {createTripSortListTemplate};
+export default class TripSort {
+  constructor(sortList) {
+    this._element = null;
+    this._sortList = sortList;
+  }
+
+  getTemplate() {
+    return createTripSortListTemplate(this._sortList);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

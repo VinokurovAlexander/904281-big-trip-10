@@ -1,3 +1,5 @@
+import {createElement} from "../utils/utils";
+
 const createControlsTabTemplate = (control) => (
   `<a class="trip-tabs__btn ${control.isActive}"
       href=" ${control.href} ">
@@ -15,5 +17,27 @@ const createTripControlsTabsTemplate = (controls) => {
   );
 };
 
-export {createTripControlsTabsTemplate};
+export default class TripControlsTab {
+  constructor(controls) {
+    this._element = null;
+    this.__controls = controls;
+  }
+
+  getTemplate() {
+    return createTripControlsTabsTemplate(this.__controls);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
 
