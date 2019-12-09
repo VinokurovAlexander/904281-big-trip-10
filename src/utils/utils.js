@@ -5,7 +5,7 @@
  * @return {string} Строка с первой заглавной буквой.
  *
  */
-const ucFirst = (str) => {
+export const ucFirst = (str) => {
   if (!str) {
     return str;
   }
@@ -20,11 +20,9 @@ const ucFirst = (str) => {
  * @return {object} Dom-узел на основе переаданноо шаблона.
  *
  */
-const createElement = (template) => {
+export const createElement = (template) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
 
   return newElement.firstChild;
 };
-
-export {ucFirst, createElement};

@@ -1,4 +1,4 @@
-import {createElement} from "../utils/utils";
+import AbstractComponent from "./abstract-components";
 
 const createTripSortItemTemplate = (sortItem) => (
   `<div class="trip-sort__item  trip-sort__item--${sortItem.value.toLowerCase()}">
@@ -24,26 +24,13 @@ const createTripSortListTemplate = (sortList) => {
   );
 };
 
-
-export default class TripSort {
+export default class TripSort extends AbstractComponent {
   constructor(sortList) {
-    this._element = null;
+    super();
     this._sortList = sortList;
   }
 
   getTemplate() {
     return createTripSortListTemplate(this._sortList);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

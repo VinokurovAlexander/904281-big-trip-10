@@ -1,4 +1,4 @@
-import {createElement} from "../utils/utils";
+import AbstractComponent from "./abstract-components";
 
 const createControlsTabTemplate = (control) => (
   `<a class="trip-tabs__btn ${control.isActive}"
@@ -17,26 +17,14 @@ const createTripControlsTabsTemplate = (controls) => {
   );
 };
 
-export default class TripControlsTab {
+export default class TripControlsTab extends AbstractComponent {
   constructor(controls) {
-    this._element = null;
+    super();
     this.__controls = controls;
   }
 
   getTemplate() {
     return createTripControlsTabsTemplate(this.__controls);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 
