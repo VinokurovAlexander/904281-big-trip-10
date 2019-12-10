@@ -2,7 +2,8 @@ import {createInputOfferTemplate} from "./offer-input";
 import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
 import {cities} from "../mock/cities";
-import {createElement, ucFirst} from "../utils/utils";
+import {ucFirst} from "../utils/utils";
+import AbstractComponent from "./abstract-components";
 
 
 const createEditEventFormTemplate = (event) => {
@@ -152,9 +153,9 @@ const createEditEventFormTemplate = (event) => {
   );
 };
 
-export default class EventForm {
+export default class EventForm extends AbstractComponent {
   constructor(event) {
-    this._element = null;
+    super();
     this._event = event;
   }
 
@@ -162,15 +163,7 @@ export default class EventForm {
     return createEditEventFormTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setSubmitHandler(handler) {
+    this.getElement().addEventListener(`submit`, handler);
   }
 }

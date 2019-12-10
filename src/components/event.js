@@ -1,12 +1,11 @@
-import {createElement} from "../utils/utils";
 import {createEventOfferTemplate} from "./offer-event";
+import AbstractComponent from "./abstract-components";
 
 const createEventTemplate = (event) => {
   const offersItems = event.offers.map((offer) => createEventOfferTemplate(offer)).join(`\n`);
 
   return (
-    `<li class="trip-events__item">
-      <div class="event">
+    `<li class="trip-events__item"><div class="event">
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${event.type.name}.png" alt="Event type icon">
         </div>
@@ -32,14 +31,13 @@ const createEventTemplate = (event) => {
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
-      </div>
-    </li>`
+      </div></li>`
   );
 };
 
-export default class Event {
+export default class Event extends AbstractComponent {
   constructor(event) {
-    this._element = null;
+    super();
     this._event = event;
   }
 
@@ -47,15 +45,7 @@ export default class Event {
     return createEventTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setOpenFormHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 }
