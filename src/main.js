@@ -3,7 +3,7 @@ import TripControlsTab from "./components/trip-controls";
 import TripFilters from "./components/trip-filters";
 import TripSort from "./components/trip-sort";
 import TripList from "./components/trip-list";
-import TripController from "./controllers/trip-controller";
+import PointController from "./controllers/point-controller";
 import NoEvents from "./components/no-events";
 import {generateEvents} from './mock/event';
 import {controls} from "./mock/controls";
@@ -31,8 +31,8 @@ if (events.length === 0) {
   render(tripEventsBlock, tripList, RenderPosition.BEFOREEND);
 
   const eventList = tripList.getElement().querySelector(`.trip-events__list`);
-  const tripController = new TripController(eventList);
-  tripController.render(events);
+  const pointController = new PointController(eventList);
+  events.forEach((event) => pointController.render(event));
 }
 
 
