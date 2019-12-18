@@ -69,7 +69,8 @@ const generateEvent = () => {
     description: getDescription(),
     images: getImage(),
     offers: getOffers(),
-    calendar: getEventTimeAndDate(event.date.min, event.date.max)
+    calendar: getEventTimeAndDate(event.date.min, event.date.max),
+    isFavorite: false,
   };
 };
 

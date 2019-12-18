@@ -1,39 +1,26 @@
-import Event from "../components/event";
-import EventForm from "../components/event-form";
-import {render, RenderPosition, replace} from "../utils/render";
-import {isEscEvent} from "../utils/esc-key";
+import PointController from "./point-controller";
 
-// const renderEvent = (container, event) => {
-//   const eventComponent = new Event(event);
-//   const eventForm = new EventForm(event);
-//
-//   const replaceEventToForm = () => {
-//     replace(eventForm, eventComponent);
-//   };
-//
-//   const replaceFormToEvent = () => {
-//     replace(eventComponent, eventForm);
-//   };
-//
-//   const onEscKeyDown = (evt) => {
-//     isEscEvent(evt, replaceFormToEvent);
-//   };
-//
-//   eventComponent.setOpenFormHandler(() => {
-//     replaceEventToForm();
-//     document.addEventListener(`keydown`, onEscKeyDown);
-//   });
-//   eventForm.setSubmitHandler(replaceFormToEvent);
-//
-//   render(container, eventComponent, RenderPosition.BEFOREEND);
-// };
+const renderPoints = (pointsContainer, points, onDataChange) => {
+  points.forEach((point) => {
+    const pointController = new PointController(pointsContainer, onDataChange);
+    pointController.render(point);
+  });
+};
 
-// export default class TripController {
-//   constructor(container) {
-//     this._container = container;
-//   }
-//
-//   render(events) {
-//     events.forEach((event) => renderEvent(this._container, event));
-//   }
-// }
+export default class TripController {
+  constructor(container, points) {
+    this._container = container;
+    this._points = points;
+  }
+
+  _onDataChange(pointController, oldData, newData) {
+    const index = this._points.findIndex((it) => it === oldData);
+
+    this._points[index] = newData;
+    pointController.render(newData);
+  }
+
+  render() {
+    renderPoints(this._container, this._points, this._onDataChange.bind(this));
+  }
+}
