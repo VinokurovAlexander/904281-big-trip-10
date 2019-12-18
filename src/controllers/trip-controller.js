@@ -1,6 +1,7 @@
 import Event from "../components/event";
 import EventForm from "../components/event-form";
 import {render, RenderPosition, replace} from "../utils/render";
+import {isEscEvent} from "../utils/esc-key";
 
 const renderEvent = (container, event) => {
   const eventComponent = new Event(event);
@@ -15,12 +16,7 @@ const renderEvent = (container, event) => {
   };
 
   const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replaceFormToEvent();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    }
+    isEscEvent(evt, replaceFormToEvent);
   };
 
   eventComponent.setOpenFormHandler(() => {
