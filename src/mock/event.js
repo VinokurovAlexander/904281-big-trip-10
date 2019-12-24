@@ -4,6 +4,7 @@ import {getOffers} from "./offer";
 import {getImage} from "./event-images";
 import {getDescription} from "./event-description";
 import {cities} from "./cities";
+import {ucFirst} from "../utils/utils";
 
 const event = {
   date: {
@@ -14,57 +15,24 @@ const event = {
     min: 5,
     max: 500
   },
-  type: [
-    {
-      name: `bus`,
-      title: `Bus to airport`
-    },
-    {
-      name: `check-in`,
-      title: `Check into hotel`
-    },
-    {
-      name: `drive`,
-      title: `Drive to ${getRandomArrayItem(cities)}`
-    },
-    {
-      name: `flight`,
-      title: `Flight to ${getRandomArrayItem(cities)}`
-    },
-    {
-      name: `restaurant`,
-      title: `Supper at restaurant`
-    },
-    {
-      name: `ship`,
-      title: `Sail to ${getRandomArrayItem(cities)}`
-    },
-    {
-      name: `sightseeing`,
-      title: `Natural History Museum`
-    },
-    {
-      name: `taxi`,
-      title: `Drive to airport`
-    },
-    {
-      name: `train`,
-      title: `Train to ${getRandomArrayItem(cities)}`
-    },
-    {
-      name: `transport`,
-      title: `Transport to ${getRandomArrayItem(cities)}`
-    },
-    {
-      name: `trip`,
-      title: `Trip to ${getRandomArrayItem(cities)}`
-    }
-  ]
+  type: [`bus`, `check-in`, `drive`, `flight`, `restaurant`, `ship`, `sightseeing`, `taxi`, `train`, `transport`, `trip`]
+};
+
+const getEventType = (destination) => {
+  const eventName = getRandomArrayItem(event.type);
+
+  return {
+    name: eventName,
+    title: `${ucFirst(eventName)} at ${destination}`
+  };
 };
 
 const generateEvent = () => {
+  const eventDestination = getRandomArrayItem(cities);
+
   return {
-    type: getRandomArrayItem(event.type),
+    destination: eventDestination,
+    type: getEventType(eventDestination),
     price: getRandomIntegerNumber(event.price.min, event.price.max),
     description: getDescription(),
     images: getImage(),

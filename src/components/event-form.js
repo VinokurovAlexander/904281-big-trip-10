@@ -1,9 +1,11 @@
 import {createInputOfferTemplate} from "./offer-input";
 import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
+import {getDescription} from "../mock/event-description";
 import {cities} from "../mock/cities";
 import {ucFirst} from "../utils/utils";
-import AbstractComponent from "./abstract-components";
+import AbstractSmartComponent from "./abstract-smart-component";
+import {getOffers} from "../mock/offer";
 
 
 const createEditEventFormTemplate = (event) => {
@@ -86,7 +88,7 @@ const createEditEventFormTemplate = (event) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${ucFirst(event.type.name)} at
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Saint Petersburg" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${event.destination} list="destination-list-1">
           <datalist id="destination-list-1">
             ${citiesList}
           </datalist>
@@ -153,10 +155,12 @@ const createEditEventFormTemplate = (event) => {
   );
 };
 
-export default class EventForm extends AbstractComponent {
+export default class EventForm extends AbstractSmartComponent {
   constructor(event) {
     super();
     this._event = event;
+
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
@@ -169,5 +173,32 @@ export default class EventForm extends AbstractComponent {
 
   setFavoriteBtnClickHandler(handler) {
     this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, handler);
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
+      if (evt.target.tagName === `INPUT`) {
+        const eventType = evt.target.value;
+        const destination = this.getElement().querySelector(`.event__input--destination`).value;
+        this._event.type.name = `${eventType}`;
+        this._event.type.title = `${ucFirst(eventType)} at ${destination}`;
+        this._event.offers = getOffers();
+
+        this.rerender();
+      }
+    });
+
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
+      this._event.description = getDescription();
+      this._event.destination = evt.target.value;
+
+      this.rerender();
+    });
+  }
+
+  recoveryListeners() {
+    this._subscribeOnEvents();
   }
 }

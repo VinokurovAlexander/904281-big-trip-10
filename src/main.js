@@ -13,6 +13,7 @@ import {render, RenderPosition} from "./utils/render";
 
 const EVENTS_COUNT = 1;
 const points = generateEvents(EVENTS_COUNT);
+console.log(points);
 
 const tripControlsBlock = document.querySelector(`.trip-controls`);
 render(tripControlsBlock, new TripControlsTab(controls), RenderPosition.AFTERBEGIN);
