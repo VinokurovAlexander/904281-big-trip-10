@@ -24,6 +24,9 @@ export default class PointController {
   }
 
   render(point) {
+    const oldPointComponent = this._pointComponent;
+    const oldPointEditComponent = this._pointEditComponent;
+
     this._pointComponent = new Event(point);
     this._pointEditComponent = new EventForm(point);
 
@@ -40,6 +43,11 @@ export default class PointController {
       }));
     });
 
-    render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
+    if (oldPointComponent && oldPointEditComponent) {
+      replace(this._pointComponent, oldPointComponent);
+      replace(this._pointEditComponent, oldPointEditComponent);
+    } else {
+      render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
+    }
   }
 }
