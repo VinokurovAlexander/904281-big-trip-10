@@ -11,7 +11,7 @@ import {filters} from "./mock/filters";
 import {sortItems} from "./mock/sort";
 import {render, RenderPosition} from "./utils/render";
 
-const EVENTS_COUNT = 2;
+const EVENTS_COUNT = 1;
 const points = generateEvents(EVENTS_COUNT);
 
 const tripControlsBlock = document.querySelector(`.trip-controls`);

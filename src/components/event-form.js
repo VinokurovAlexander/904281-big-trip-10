@@ -159,6 +159,7 @@ export default class EventForm extends AbstractSmartComponent {
   constructor(event) {
     super();
     this._event = event;
+    this._submitHandler = null;
 
     this._subscribeOnEvents();
   }
@@ -169,6 +170,7 @@ export default class EventForm extends AbstractSmartComponent {
 
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
+    this._submitHandler = handler;
   }
 
   setFavoriteBtnClickHandler(handler) {
@@ -199,6 +201,7 @@ export default class EventForm extends AbstractSmartComponent {
   }
 
   recoveryListeners() {
+    this.setSubmitHandler(this._submitHandler);
     this._subscribeOnEvents();
   }
 }

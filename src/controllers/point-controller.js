@@ -30,6 +30,7 @@ export default class PointController {
   }
 
   _replaceEditToPoint() {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
     replace(this._pointComponent, this._pointEditComponent);
 
     this._mode = Mode.DEFAULT;
@@ -57,7 +58,11 @@ export default class PointController {
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._pointEditComponent.setSubmitHandler(this._replaceEditToPoint);
+    // this._pointEditComponent.setSubmitHandler(this._replaceEditToPoint);
+    this._pointEditComponent.setSubmitHandler((evt) => {
+      evt.preventDefault();
+      this._replaceEditToPoint();
+    });
 
     this._pointEditComponent.setFavoriteBtnClickHandler(() => {
       this._onDataChange(this, point, Object.assign({}, point, {

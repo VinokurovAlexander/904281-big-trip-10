@@ -25,7 +25,6 @@ export default class TripController {
       return;
     }
 
-
     this._points[index] = newData;
     pointController.render(newData);
   }
