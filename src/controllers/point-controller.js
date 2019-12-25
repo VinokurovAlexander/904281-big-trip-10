@@ -3,24 +3,46 @@ import EventForm from "../components/event-form";
 import {render, RenderPosition, replace} from "../utils/render";
 import {isEscEvent} from "../utils/esc-key";
 
+const Mode = {
+  DEFAULT: `default`,
+  EDIT: `edit`,
+};
+
 export default class PointController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._pointComponent = null;
     this._pointEditComponent = null;
     this._onDataChange = onDataChange;
+    this.onViewChange = onViewChange;
+
+    this._mode = Mode.DEFAULT;
+
+    this._replaceEditToPoint = this._replaceEditToPoint.bind(this);
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
   _replacePointToEdit() {
+    this.onViewChange();
+
     replace(this._pointEditComponent, this._pointComponent);
+    this._mode = Mode.EDIT;
   }
 
   _replaceEditToPoint() {
     replace(this._pointComponent, this._pointEditComponent);
+
+    this._mode = Mode.DEFAULT;
   }
 
   _onEscKeyDown(evt) {
-    isEscEvent(evt, this._replaceEditToPoint.bind(this));
+    isEscEvent(evt, this._replaceEditToPoint);
+  }
+
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceEditToPoint();
+    }
   }
 
   render(point) {
@@ -32,10 +54,10 @@ export default class PointController {
 
     this._pointComponent.setOpenFormHandler(() => {
       this._replacePointToEdit();
-      document.addEventListener(`keydown`, this._onEscKeyDown.bind(this));
+      document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._pointEditComponent.setSubmitHandler(this._replaceEditToPoint.bind(this));
+    this._pointEditComponent.setSubmitHandler(this._replaceEditToPoint);
 
     this._pointEditComponent.setFavoriteBtnClickHandler(() => {
       this._onDataChange(this, point, Object.assign({}, point, {
