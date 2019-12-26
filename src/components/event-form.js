@@ -193,10 +193,15 @@ export default class EventForm extends AbstractSmartComponent {
     });
 
     element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
-      this._event.description = getDescription();
-      this._event.destination = evt.target.value;
-
-      this.rerender();
+      const currentCity = evt.target.value;
+      if (cities.includes(currentCity)) {
+        this._event.description = getDescription();
+        this._event.destination = currentCity;
+        evt.target.setCustomValidity(``);
+        this.rerender();
+      } else {
+        evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
+      }
     });
   }
 

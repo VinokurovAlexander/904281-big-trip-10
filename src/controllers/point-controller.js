@@ -14,7 +14,7 @@ export default class PointController {
     this._pointComponent = null;
     this._pointEditComponent = null;
     this._onDataChange = onDataChange;
-    this.onViewChange = onViewChange;
+    this._onViewChange = onViewChange;
 
     this._mode = Mode.DEFAULT;
 
@@ -23,7 +23,7 @@ export default class PointController {
   }
 
   _replacePointToEdit() {
-    this.onViewChange();
+    this._onViewChange();
 
     replace(this._pointEditComponent, this._pointComponent);
     this._mode = Mode.EDIT;
@@ -58,9 +58,9 @@ export default class PointController {
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    // this._pointEditComponent.setSubmitHandler(this._replaceEditToPoint);
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
+
       this._replaceEditToPoint();
     });
 
