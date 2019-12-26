@@ -160,6 +160,7 @@ export default class EventForm extends AbstractSmartComponent {
     super();
     this._event = event;
     this._submitHandler = null;
+    this._favoriteClickHandler = null;
 
     this._subscribeOnEvents();
   }
@@ -175,6 +176,7 @@ export default class EventForm extends AbstractSmartComponent {
 
   setFavoriteBtnClickHandler(handler) {
     this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, handler);
+    this._favoriteClickHandler = handler;
   }
 
   _subscribeOnEvents() {
@@ -197,6 +199,7 @@ export default class EventForm extends AbstractSmartComponent {
       if (cities.includes(currentCity)) {
         this._event.description = getDescription();
         this._event.destination = currentCity;
+        this._event.type.title = `${ucFirst(this._event.type.name)} at ${currentCity}`;
         evt.target.setCustomValidity(``);
         this.rerender();
       } else {
@@ -207,6 +210,7 @@ export default class EventForm extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
+    this.setFavoriteBtnClickHandler(this._favoriteClickHandler);
     this._subscribeOnEvents();
   }
 }

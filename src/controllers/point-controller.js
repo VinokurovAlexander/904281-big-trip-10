@@ -50,6 +50,7 @@ export default class PointController {
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
 
+
     this._pointComponent = new Event(point);
     this._pointEditComponent = new EventForm(point);
 
@@ -60,6 +61,7 @@ export default class PointController {
 
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
+      this.render(point);
 
       this._replaceEditToPoint();
     });
