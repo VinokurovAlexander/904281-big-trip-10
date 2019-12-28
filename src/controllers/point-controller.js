@@ -61,8 +61,7 @@ export default class PointController {
 
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      this.render(point);
-
+      this._pointEditComponent.getOldData();
       this._replaceEditToPoint();
     });
 
