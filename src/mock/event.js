@@ -1,6 +1,6 @@
 import {getRandomArrayItem, getRandomIntegerNumber} from '../utils/random';
 import {getEventTimeAndDate} from '../utils/date';
-import {getOffers} from "./offer";
+import {generateOffers} from "./offer";
 import {getImage} from "./event-images";
 import {getDescription} from "./event-description";
 import {cities} from "./cities";
@@ -14,17 +14,65 @@ const event = {
   price: {
     min: 5,
     max: 500
-  },
-  type: [`bus`, `check-in`, `drive`, `flight`, `restaurant`, `ship`, `sightseeing`, `taxi`, `train`, `transport`, `trip`]
+  }
 };
 
-const getEventType = (destination) => {
-  const eventName = getRandomArrayItem(event.type);
+export const pointTypes = [
+  {
+    name: `taxi`,
+    group: `transfer`,
+  },
+  {
+    name: `bus`,
+    group: `transfer`,
+  },
+  {
+    name: `train`,
+    group: `transfer`,
+  },
+  {
+    name: `ship`,
+    group: `transfer`,
+  },
+  {
+    name: `transport`,
+    group: `transfer`,
+  },
+  {
+    name: `drive`,
+    group: `transfer`,
+  },
+  {
+    name: `flight`,
+    group: `transfer`,
+  },
+  {
+    name: `check-in`,
+    group: `activity`,
+  },
+  {
+    name: `sightseeing`,
+    group: `activity`,
+  },
+  {
+    name: `restaurant`,
+    group: `activity`,
+  },
+];
 
-  return {
-    name: eventName,
-    title: `${ucFirst(eventName)} at ${destination}`
-  };
+
+export const getEventType = (destination, currentType = null) => {
+  let type = {};
+
+  if (currentType) {
+    type = pointTypes.find((pointType) => pointType.name === currentType);
+  } else {
+    type = getRandomArrayItem(pointTypes);
+  }
+
+  return Object.assign(type, {
+    title: `${ucFirst(type.name)} ${type.group === `transfer` ? `to` : `at`} ${destination}`
+  });
 };
 
 const generateEvent = () => {
@@ -36,17 +84,16 @@ const generateEvent = () => {
     price: getRandomIntegerNumber(event.price.min, event.price.max),
     description: getDescription(),
     images: getImage(),
-    offers: getOffers(),
+    offers: generateOffers(),
     calendar: getEventTimeAndDate(event.date.min, event.date.max),
     isFavorite: false,
   };
 };
 
-const generateEvents = (count) => {
+export const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
     .map(generateEvent);
 };
 
-export {generateEvents};
 

@@ -37,11 +37,14 @@ export default class PointController {
   }
 
   _onEscKeyDown(evt) {
+    isEscEvent(evt, this._pointEditComponent.reset.bind(this._pointEditComponent));
     isEscEvent(evt, this._replaceEditToPoint);
+
   }
 
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {
+      this._pointEditComponent.reset();
       this._replaceEditToPoint();
     }
   }
@@ -49,7 +52,6 @@ export default class PointController {
   render(point) {
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
-
 
     this._pointComponent = new Event(point);
     this._pointEditComponent = new EventForm(point);
@@ -61,14 +63,17 @@ export default class PointController {
 
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      this._pointEditComponent.getOldData();
+
+      const oldData = point;
+      const newData = this._pointEditComponent.getData(evt.target);
+      this._onDataChange(this, oldData, newData);
+
       this._replaceEditToPoint();
     });
 
     this._pointEditComponent.setFavoriteBtnClickHandler(() => {
-      this._onDataChange(this, point, Object.assign({}, point, {
-        isFavorite: !point.isFavorite,
-      }));
+      this._pointEditComponent._eventIsFavorite = !this._pointEditComponent._eventIsFavorite;
+      this._pointEditComponent.rerender();
     });
 
     if (oldPointComponent && oldPointEditComponent) {

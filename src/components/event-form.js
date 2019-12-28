@@ -3,10 +3,12 @@ import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
 import {getDescription} from "../mock/event-description";
 import {cities} from "../mock/cities";
-import {createPointTypesList} from "../mock/point-type";
 import {ucFirst} from "../utils/utils";
 import AbstractSmartComponent from "./abstract-smart-component";
-import {getOffers} from "../mock/offer";
+import {generateOffers} from "../mock/offer";
+import {pointTypes, getEventType} from "../mock/event";
+import {offers} from "../mock/offer";
+import {getEventTimeAndDate} from '../utils/date';
 
 export default class EventForm extends AbstractSmartComponent {
   constructor(event) {
@@ -17,6 +19,7 @@ export default class EventForm extends AbstractSmartComponent {
     this._eventDescription = this._event.description;
     this._eventTypeName = this._event.type.name;
     this._eventOffers = this._event.offers;
+    this._eventIsFavorite = this._event.isFavorite;
 
     this._submitHandler = null;
     this._favoriteClickHandler = null;
@@ -24,11 +27,41 @@ export default class EventForm extends AbstractSmartComponent {
     this._subscribeOnEvents();
   }
 
+  _createPointTypesList() {
+
+    const createPointTypesItem = (types, group) => {
+      return types
+        .filter((type) => type.group === group)
+        .map((type) => {
+          return (`
+        <div class="event__type-item">
+          <input id="event-type-${type.name}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${type.name} ${this._eventTypeName === type.name ? `checked` : ``}>
+          <label class="event__type-label  event__type-label--${type.name}" for="event-type-${type.name}-1">${ucFirst(type.name)}</label>
+        </div>
+        `);
+        })
+        .join(`\n`);
+    };
+
+    return (`
+    <div class="event__type-list">
+      <fieldset class="event__type-group">
+        <legend class="visually-hidden">Transfer</legend>
+        ${createPointTypesItem(pointTypes, `transfer`)}
+      </fieldset>
+  
+      <fieldset class="event__type-group">
+        <legend class="visually-hidden">Activity</legend>
+         ${createPointTypesItem(pointTypes, `activity`)}
+      </fieldset>
+    </div>
+  `);
+  }
+
   _createEditEventFormTemplate() {
     const offers = this._eventOffers.map((offer) => createInputOfferTemplate(offer)).join(`\n`);
     const images = this._event.images.map((image) => createEventImageTemplate(image)).join(`\n`);
     const citiesList = cities.map((city) => createCityOptionTemplate(city)).join(`\n`);
-    const pointTypesList = createPointTypesList();
 
     return (
       `<form class="event  event--edit" action="#" method="post">
@@ -39,7 +72,7 @@ export default class EventForm extends AbstractSmartComponent {
             <img class="event__type-icon" width="17" height="17" src="img/icons/${this._eventTypeName}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-          ${pointTypesList}
+          ${this._createPointTypesList()}
        </div>
 
         <div class="event__field-group  event__field-group--destination">
@@ -75,7 +108,7 @@ export default class EventForm extends AbstractSmartComponent {
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
 
-        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${this._event.isFavorite ? `checked` : ``}>
+        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${this._eventIsFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-1">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -111,7 +144,7 @@ export default class EventForm extends AbstractSmartComponent {
       </section>
     </form>`
     );
-  };
+  }
 
   getTemplate() {
     return this._createEditEventFormTemplate();
@@ -132,40 +165,13 @@ export default class EventForm extends AbstractSmartComponent {
 
     element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
       if (evt.target.tagName === `INPUT`) {
-        // const eventType = evt.target.value;
-        // const destination = this.getElement().querySelector(`.event__input--destination`).value;
-        // this._event.type.name = `${eventType}`;
-        // this._event.type.title = `${ucFirst(eventType)} at ${destination}`;
-        // this._event.offers = getOffers();
+        const eventType = evt.target.value;
+        this._eventTypeName = `${eventType}`;
+        this._eventOffers = generateOffers();
 
-        //
-
+        this.rerender();
       }
     });
-
-    element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
-      // if (evt.target.tagName === `INPUT`) {
-      //   const eventType = evt.target.value;
-        // const destination = this.getElement().querySelector(`.event__input--destination`).value;
-      //   this._eventTypeName = `${eventType}`;
-      //   this._eventOffers = getOffers();
-      //
-      //   this.rerender();
-      // }
-    });
-
-    // element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
-    //   const currentCity = evt.target.value;
-    //   if (cities.includes(currentCity)) {
-    //     this._event.description = getDescription();
-    //     this._event.destination = currentCity;
-    //     this._event.type.title = `${ucFirst(this._event.type.name)} at ${currentCity}`;
-    //     evt.target.setCustomValidity(``);
-    //     this.rerender();
-    //   } else {
-    //     evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
-    //   }
-    // });
 
     element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
       const currentCity = evt.target.value;
@@ -192,16 +198,33 @@ export default class EventForm extends AbstractSmartComponent {
     this._eventDestination = event.destination;
     this._eventDescription = event.description;
     this._eventTypeName = event.type.name;
+    this._eventIsFavorite = event.isFavorite;
 
     this.rerender();
   }
 
-  getOldData() {
-    const oldformElement = this.getElement();
-    const oldFormData = new FormData(oldformElement);
+  getData() {
+    const formElement = this.getElement();
+    const formData = new FormData(formElement);
 
-    for (let [name, value] of oldFormData) {
-      console.log(`${name} = ${value}`); // key1=value1, потом key2=value2
-    }
+    const formOffers = [];
+    Array.from(formElement.querySelectorAll(`.event__offer-checkbox`)).forEach((currentOffer) => {
+      const currentOfferType = currentOffer.name.slice(currentOffer.name.lastIndexOf(`-`) + 1);
+      formOffers.push(offers.find((offer) => offer.type === currentOfferType));
+    });
+
+    const formDestination = formData.get(`event-destination`);
+    const formImages = Array.from(formElement.querySelectorAll(`.event__photo`)).map((image) => image.src);
+
+    return {
+      destination: formDestination,
+      type: getEventType(formDestination, formData.get(`event-type`)),
+      price: formData.get(`event-price`),
+      offers: formOffers,
+      calendar: getEventTimeAndDate(new Date(`1 December 2020, 9:00`), new Date(`1 December 2020, 15:45`)),
+      images: formImages,
+      description: formElement.querySelector(`.event__destination-description`).textContent,
+      isFavorite: formElement.querySelector(`.event__favorite-checkbox`).checked
+    };
   }
 }
