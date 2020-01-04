@@ -1,5 +1,5 @@
 import {getRandomArrayItem, getRandomIntegerNumber} from '../utils/random';
-import {getEventTimeAndDate} from '../utils/date';
+import {getDuration} from "../utils/date";
 import {generateOffers} from "./offer";
 import {getImage} from "./event-images";
 import {getDescription} from "./event-description";
@@ -9,7 +9,7 @@ import {ucFirst} from "../utils/utils";
 const event = {
   date: {
     min: new Date(`1 December 2020, 9:00`),
-    max: new Date(`1 December 2020, 15:45`)
+    max: new Date(`2 December 2020, 12:59`)
   },
   price: {
     min: 5,
@@ -80,7 +80,11 @@ const generateEvent = () => {
     description: getDescription(),
     images: getImage(),
     offers: generateOffers(),
-    calendar: getEventTimeAndDate(event.date.min, event.date.max),
+    calendar: {
+      start: event.date.min,
+      end: event.date.max,
+      duration: getDuration(event.date.min, event.date.max)
+    },
     isFavorite: false,
   };
 };

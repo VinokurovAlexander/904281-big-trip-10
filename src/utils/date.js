@@ -1,87 +1,41 @@
-/**
- * Возвращает время в формате hh:mm.
- *
- * @param {object} date - Объект Date.
- * @return {string} Время в формате HH:mm.
- *
- */
-const getTime = (date) => {
-  let minutes = date.getMinutes();
-  let hours = date.getHours();
-
-  if (minutes < 10) {
-    minutes = `0${minutes}`;
-  }
-
-  if (hours < 10) {
-    hours = `0${hours}`;
-  }
-
-  return `${hours}:${minutes}`;
-};
-
-/**
- * Возвращает дату и время.
- *
- * @param {object} date - Объект Date.
- * @param {boolean} isForm - Ключ для возвращения даты и времени в формате для отображения в форме.
- * @return {string} Дата в формате 2019-03-18T10:30, если isForm - 18/03/19 12:25.
- *
- */
-const getDate = (date, isForm = false) => {
-  let year = date.getFullYear();
-  let month = date.getMonth() + 1;
-  let day = date.getDate();
-
-  if (month < 10) {
-    month = `0${month}`;
-  }
-
-  if (day < 10) {
-    day = `0${day}`;
-  }
-  const time = getTime(date);
-  if (isForm) {
-    const formYear = (year + ``).slice(2);
-    return `${day}/${month}/${formYear} ${time}`;
-  }
-  return `${year}-${month}-${day}T${time}`;
-};
-
+import moment from "moment";
 /**
  * Возвращает разницу во времени между датами.
  *
  * @param {object} firstDate - Объект Date начальное время.
  * @param {object} secondDate - Объект Date конечное время.
- * @return {string} Время в формате 13H:25M.
+ * @return {string} Время в формате 2D:13H:25M.
  *
  */
 const getDuration = (firstDate, secondDate) => {
-  const duration = secondDate - firstDate;
-  const durationHours = Math.floor(duration / 3600000);
-  let durationMinutes = Math.round(((duration / 3600000) - (Math.floor(duration / 3600000))) * 60);
-  return `${durationHours}H ${durationMinutes}M`;
+  let duration = ``;
+  const startTime = moment(firstDate);
+  const endTime = moment(secondDate);
+
+  const durationDays = endTime.diff(startTime, `days`);
+  if (durationDays) {
+    duration = `${durationDays}D`;
+  }
+
+  let durationHours = endTime.diff(startTime, `hours`);
+  if (durationHours >= 24) {
+    durationHours = endTime.subtract(durationDays, `d`).diff(startTime, `hours`);
+  }
+
+  if ((durationDays) || (!durationDays && durationHours)) {
+    duration += ` ${durationHours}H`;
+  }
+
+  let durationMinutes = endTime.diff(startTime, `minutes`);
+  if (durationMinutes >= 60) {
+    durationMinutes = endTime.subtract(durationHours, `h`).diff(startTime, `minutes`);
+  }
+
+  duration += ` ${durationMinutes}M`;
+
+  return duration;
 };
 
-const isForm = true;
-const getEventTimeAndDate = (minDateAndTime, maxDateAndTime) => {
-  return {
-    time: {
-      min: getTime(minDateAndTime),
-      max: getTime(maxDateAndTime),
-    },
-    datetime: {
-      min: getDate(minDateAndTime),
-      max: getDate(maxDateAndTime)
-    },
-    formDatetime: {
-      min: getDate(minDateAndTime, isForm),
-      max: getDate(maxDateAndTime, isForm)
-    },
-    duration: getDuration(minDateAndTime, maxDateAndTime)
-  };
-};
-
-export {getEventTimeAndDate};
+export {getDuration};
 
 

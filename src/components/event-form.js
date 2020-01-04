@@ -8,12 +8,9 @@ import AbstractSmartComponent from "./abstract-smart-component";
 import {generateOffers} from "../mock/offer";
 import {pointTypes, getEventType} from "../mock/event";
 import {offers} from "../mock/offer";
-import {getEventTimeAndDate} from "../utils/date";
-
-import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.min.css";
-import "flatpickr/dist/themes/light.css";
-
+import {flatpickrInit} from "../utils/flatpickr";
+import moment from "moment";
+import {getDuration} from "../utils/date";
 
 export default class EventForm extends AbstractSmartComponent {
   constructor(event) {
@@ -25,14 +22,25 @@ export default class EventForm extends AbstractSmartComponent {
     this._eventTypeName = this._event.type.name;
     this._eventOffers = this._event.offers;
     this._eventIsFavorite = this._event.isFavorite;
+    this._eventStart = this._event.calendar.start;
+    this._eventEnd = this._event.calendar.end;
 
     this._submitHandler = null;
     this._favoriteClickHandler = null;
 
-    this._flatpickr = null;
+    this._flatpickr = {
+      start: null,
+      end: null
+    };
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
+  }
+
+  rerender() {
+    super.rerender();
+
+    this._applyFlatpickr();
   }
 
   _createPointTypesList() {
@@ -96,12 +104,12 @@ export default class EventForm extends AbstractSmartComponent {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${this._event.calendar.formDatetime.min}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(this._eventStart).format(`DD/MM/YY HH:mm`)}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${this._event.calendar.formDatetime.max}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(this._eventEnd).format(`DD/MM/YY HH:mm`)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -191,7 +199,23 @@ export default class EventForm extends AbstractSmartComponent {
         evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
       }
     });
+
+    Array.from(element.querySelectorAll(`.event__input--time`)).map((dateElement) => {
+      dateElement.addEventListener(`change`, (evt) => {
+        const currentStartDate = new Date(this._flatpickr.start.input.value);
+        const currentEndDate = new Date(this._flatpickr.end.input.value);
+        if ((moment(currentEndDate).isBefore(moment(currentStartDate)))) {
+          evt.target.nextSibling.setCustomValidity(`Дата окончания не может быть меньше даты начала события`);
+        } else {
+          evt.target.nextSibling.setCustomValidity(``);
+          this._eventStart = currentStartDate;
+          this._eventEnd = currentEndDate;
+          this.rerender();
+        }
+      });
+    });
   }
+
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
@@ -206,6 +230,8 @@ export default class EventForm extends AbstractSmartComponent {
     this._eventDescription = event.description;
     this._eventTypeName = event.type.name;
     this._eventIsFavorite = event.isFavorite;
+    this._eventStart = event.calendar.start;
+    this._eventEnd = event.calendar.end;
 
     this.rerender();
   }
@@ -222,31 +248,38 @@ export default class EventForm extends AbstractSmartComponent {
 
     const formDestination = formData.get(`event-destination`);
     const formImages = Array.from(formElement.querySelectorAll(`.event__photo`)).map((image) => image.src);
+    const startDate = new Date(formData.get(`event-start-time`));
+    const endDate = new Date(formData.get(`event-end-time`));
 
     return {
       destination: formDestination,
       type: getEventType(formDestination, formData.get(`event-type`)),
       price: formData.get(`event-price`),
       offers: formOffers,
-      calendar: getEventTimeAndDate(new Date(`1 December 2020, 9:00`), new Date(`1 December 2020, 15:45`)),
       images: formImages,
       description: formElement.querySelector(`.event__destination-description`).textContent,
-      isFavorite: formElement.querySelector(`.event__favorite-checkbox`).checked
+      isFavorite: formElement.querySelector(`.event__favorite-checkbox`).checked,
+      calendar: {
+        start: startDate,
+        end: endDate,
+        duration: getDuration(startDate, endDate)
+      }
     };
   }
 
   _applyFlatpickr() {
-    const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
-    const eventStart = Array.from(dateElements)[0];
-    flatpickr(eventStart, {
-      allowInput: true,
-      defaultDate: this._event.calendar.formDatetime.min
-    });
+    if (this._flatpickr.start && this._flatpickr.end) {
+      for (let date of Object.keys(this._flatpickr)) {
+        this._flatpickr[date].destroy();
+        this._flatpickr[date] = null;
+      }
+    }
 
-    const eventEnd = Array.from(dateElements)[1];
-    flatpickr(eventEnd, {
-      allowInput: true,
-      defaultDate: this._event.calendar.formDatetime.max
-    });
+    const dateInputs = Array.from(this.getElement().querySelectorAll(`.event__input--time`));
+    const eventStart = dateInputs[0];
+    const eventEnd = dateInputs[1];
+
+    this._flatpickr.start = flatpickrInit(eventStart, this._eventStart);
+    this._flatpickr.end = flatpickrInit(eventEnd, this._eventEnd);
   }
 }
