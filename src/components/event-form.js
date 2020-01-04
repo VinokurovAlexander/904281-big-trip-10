@@ -8,7 +8,12 @@ import AbstractSmartComponent from "./abstract-smart-component";
 import {generateOffers} from "../mock/offer";
 import {pointTypes, getEventType} from "../mock/event";
 import {offers} from "../mock/offer";
-import {getEventTimeAndDate} from '../utils/date';
+import {getEventTimeAndDate} from "../utils/date";
+
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
+import "flatpickr/dist/themes/light.css";
+
 
 export default class EventForm extends AbstractSmartComponent {
   constructor(event) {
@@ -24,11 +29,13 @@ export default class EventForm extends AbstractSmartComponent {
     this._submitHandler = null;
     this._favoriteClickHandler = null;
 
+    this._flatpickr = null;
+
+    this._applyFlatpickr();
     this._subscribeOnEvents();
   }
 
   _createPointTypesList() {
-
     const createPointTypesItem = (types, group) => {
       return types
         .filter((type) => type.group === group)
@@ -49,7 +56,7 @@ export default class EventForm extends AbstractSmartComponent {
         <legend class="visually-hidden">Transfer</legend>
         ${createPointTypesItem(pointTypes, `transfer`)}
       </fieldset>
-  
+
       <fieldset class="event__type-group">
         <legend class="visually-hidden">Activity</legend>
          ${createPointTypesItem(pointTypes, `activity`)}
@@ -226,5 +233,20 @@ export default class EventForm extends AbstractSmartComponent {
       description: formElement.querySelector(`.event__destination-description`).textContent,
       isFavorite: formElement.querySelector(`.event__favorite-checkbox`).checked
     };
+  }
+
+  _applyFlatpickr() {
+    const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
+    const eventStart = Array.from(dateElements)[0];
+    flatpickr(eventStart, {
+      allowInput: true,
+      defaultDate: this._event.calendar.formDatetime.min
+    });
+
+    const eventEnd = Array.from(dateElements)[1];
+    flatpickr(eventEnd, {
+      allowInput: true,
+      defaultDate: this._event.calendar.formDatetime.max
+    });
   }
 }
