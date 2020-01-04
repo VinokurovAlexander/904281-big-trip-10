@@ -62,13 +62,8 @@ export const pointTypes = [
 
 
 export const getEventType = (destination, currentType = null) => {
-  let type = {};
+  const type = currentType ? pointTypes.find((pointType) => pointType.name === currentType) : getRandomArrayItem(pointTypes);
 
-  if (currentType) {
-    type = pointTypes.find((pointType) => pointType.name === currentType);
-  } else {
-    type = getRandomArrayItem(pointTypes);
-  }
 
   return Object.assign(type, {
     title: `${ucFirst(type.name)} ${type.group === `transfer` ? `to` : `at`} ${destination}`
