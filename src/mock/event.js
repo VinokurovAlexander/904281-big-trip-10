@@ -1,83 +1,98 @@
 import {getRandomArrayItem, getRandomIntegerNumber} from '../utils/random';
-import {getEventTimeAndDate} from '../utils/date';
-import {getOffers} from "./offer";
+import {getDuration} from "../utils/date";
+import {generateOffers} from "./offer";
 import {getImage} from "./event-images";
 import {getDescription} from "./event-description";
 import {cities} from "./cities";
+import {ucFirst} from "../utils/utils";
 
 const event = {
   date: {
     min: new Date(`1 December 2020, 9:00`),
-    max: new Date(`1 December 2020, 15:45`)
+    max: new Date(`2 December 2020, 12:59`)
   },
   price: {
     min: 5,
     max: 500
+  }
+};
+
+export const pointTypes = [
+  {
+    name: `taxi`,
+    group: `transfer`,
   },
-  type: [
-    {
-      name: `bus`,
-      title: `Bus to airport`
-    },
-    {
-      name: `check-in`,
-      title: `Check into hotel`
-    },
-    {
-      name: `drive`,
-      title: `Drive to ${getRandomArrayItem(cities)}`
-    },
-    {
-      name: `flight`,
-      title: `Flight to ${getRandomArrayItem(cities)}`
-    },
-    {
-      name: `restaurant`,
-      title: `Supper at restaurant`
-    },
-    {
-      name: `ship`,
-      title: `Sail to ${getRandomArrayItem(cities)}`
-    },
-    {
-      name: `sightseeing`,
-      title: `Natural History Museum`
-    },
-    {
-      name: `taxi`,
-      title: `Drive to airport`
-    },
-    {
-      name: `train`,
-      title: `Train to ${getRandomArrayItem(cities)}`
-    },
-    {
-      name: `transport`,
-      title: `Transport to ${getRandomArrayItem(cities)}`
-    },
-    {
-      name: `trip`,
-      title: `Trip to ${getRandomArrayItem(cities)}`
-    }
-  ]
+  {
+    name: `bus`,
+    group: `transfer`,
+  },
+  {
+    name: `train`,
+    group: `transfer`,
+  },
+  {
+    name: `ship`,
+    group: `transfer`,
+  },
+  {
+    name: `transport`,
+    group: `transfer`,
+  },
+  {
+    name: `drive`,
+    group: `transfer`,
+  },
+  {
+    name: `flight`,
+    group: `transfer`,
+  },
+  {
+    name: `check-in`,
+    group: `activity`,
+  },
+  {
+    name: `sightseeing`,
+    group: `activity`,
+  },
+  {
+    name: `restaurant`,
+    group: `activity`,
+  },
+];
+
+
+export const getEventType = (destination, currentType = null) => {
+  const type = currentType ? pointTypes.find((pointType) => pointType.name === currentType) : getRandomArrayItem(pointTypes);
+
+
+  return Object.assign(type, {
+    title: `${ucFirst(type.name)} ${type.group === `transfer` ? `to` : `at`} ${destination}`
+  });
 };
 
 const generateEvent = () => {
+  const eventDestination = getRandomArrayItem(cities);
+
   return {
-    type: getRandomArrayItem(event.type),
+    destination: eventDestination,
+    type: getEventType(eventDestination),
     price: getRandomIntegerNumber(event.price.min, event.price.max),
     description: getDescription(),
     images: getImage(),
-    offers: getOffers(),
-    calendar: getEventTimeAndDate(event.date.min, event.date.max)
+    offers: generateOffers(),
+    calendar: {
+      start: event.date.min,
+      end: event.date.max,
+      duration: getDuration(event.date.min, event.date.max)
+    },
+    isFavorite: false,
   };
 };
 
-const generateEvents = (count) => {
+export const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
     .map(generateEvent);
 };
 
-export {generateEvents};
 

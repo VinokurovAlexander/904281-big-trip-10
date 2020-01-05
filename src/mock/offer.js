@@ -1,7 +1,7 @@
 import {getRandomIntegerNumber} from "../utils/random";
 
 const MAX_OFFERS = 2;
-const offers = [
+export const offers = [
   {
     type: `luggage`,
     title: `Add luggage`,
@@ -28,7 +28,7 @@ const offers = [
   },
 ];
 
-const getOffers = () => {
+const generateOffers = () => {
   const offersCount = getRandomIntegerNumber(0, MAX_OFFERS + 1);
   const eventOffers = [];
   while (eventOffers.length < offersCount) {
@@ -40,4 +40,4 @@ const getOffers = () => {
   return eventOffers;
 };
 
-export {getOffers};
+export {generateOffers};

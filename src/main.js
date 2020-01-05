@@ -3,23 +3,23 @@ import TripControlsTab from "./components/trip-controls";
 import TripFilters from "./components/trip-filters";
 import TripSort from "./components/trip-sort";
 import TripList from "./components/trip-list";
-import TripController from "./controllers/trip-controller";
 import NoEvents from "./components/no-events";
+import TripController from "./controllers/trip-controller";
 import {generateEvents} from './mock/event';
 import {controls} from "./mock/controls";
 import {filters} from "./mock/filters";
 import {sortItems} from "./mock/sort";
 import {render, RenderPosition} from "./utils/render";
 
-const EVENTS_COUNT = 1;
-const events = generateEvents(EVENTS_COUNT);
+const EVENTS_COUNT = 3;
+const points = generateEvents(EVENTS_COUNT);
 
 const tripControlsBlock = document.querySelector(`.trip-controls`);
 render(tripControlsBlock, new TripControlsTab(controls), RenderPosition.AFTERBEGIN);
 render(tripControlsBlock, new TripFilters(filters), RenderPosition.BEFOREEND);
 const tripEventsBlock = document.querySelector(`.trip-events`);
 
-if (events.length === 0) {
+if (points.length === 0) {
   const noEventsComponent = new NoEvents();
   render(tripEventsBlock, noEventsComponent, RenderPosition.BEFOREEND);
 } else {
@@ -31,8 +31,8 @@ if (events.length === 0) {
   render(tripEventsBlock, tripList, RenderPosition.BEFOREEND);
 
   const eventList = tripList.getElement().querySelector(`.trip-events__list`);
-  const tripController = new TripController(eventList);
-  tripController.render(events);
+  const tripController = new TripController(eventList, points);
+  tripController.render();
 }
 
 

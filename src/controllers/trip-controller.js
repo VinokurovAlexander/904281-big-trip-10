@@ -1,43 +1,39 @@
-import Event from "../components/event";
-import EventForm from "../components/event-form";
-import {render, RenderPosition, replace} from "../utils/render";
+import PointController from "./point-controller";
 
-const renderEvent = (container, event) => {
-  const eventComponent = new Event(event);
-  const eventForm = new EventForm(event);
-
-  const replaceEventToForm = () => {
-    replace(eventForm, eventComponent);
-  };
-
-  const replaceFormToEvent = () => {
-    replace(eventComponent, eventForm);
-  };
-
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replaceFormToEvent();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    }
-  };
-
-  eventComponent.setOpenFormHandler(() => {
-    replaceEventToForm();
-    document.addEventListener(`keydown`, onEscKeyDown);
+const renderPoints = (pointsContainer, points, onDataChange, onViewChange) => {
+  return points.map((point) => {
+    const pointController = new PointController(pointsContainer, onDataChange, onViewChange);
+    pointController.render(point);
+    return pointController;
   });
-  eventForm.setSubmitHandler(replaceFormToEvent);
-
-  render(container, eventComponent, RenderPosition.BEFOREEND);
 };
 
 export default class TripController {
-  constructor(container) {
+  constructor(container, points) {
     this._container = container;
+    this._points = points;
+    this._showedPointControllers = [];
+
+    this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
   }
 
-  render(events) {
-    events.forEach((event) => renderEvent(this._container, event));
+  _onDataChange(pointController, oldData, newData) {
+    const index = this._points.findIndex((it) => it === oldData);
+
+    if (index === -1) {
+      return;
+    }
+
+    this._points[index] = newData;
+    pointController.render(newData);
+  }
+
+  _onViewChange() {
+    this._showedPointControllers.map((controller) => controller.setDefaultView());
+  }
+
+  render() {
+    this._showedPointControllers = renderPoints(this._container, this._points, this._onDataChange, this._onViewChange);
   }
 }
