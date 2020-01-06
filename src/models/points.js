@@ -29,6 +29,18 @@ export default class Points {
     return true;
   }
 
+  removePoint(id) {
+    const index = this._points.find((it) => it.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this._points.splice(index, 1);
+
+    return true;
+  }
+
   setFilter(filter) {
     this._activeFilter = filter;
     this._filterChangeHandler.forEach((handler) => handler());

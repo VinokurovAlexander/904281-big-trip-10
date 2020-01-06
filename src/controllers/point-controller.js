@@ -76,6 +76,10 @@ export default class PointController {
       this._pointEditComponent.rerender();
     });
 
+    this._pointEditComponent.setCloseBtnClickHandler(() => {
+      this._onDataChange(this, point, null);
+    });
+
     if (oldPointComponent && oldPointEditComponent) {
       replace(this._pointComponent, oldPointComponent);
       replace(this._pointEditComponent, oldPointEditComponent);

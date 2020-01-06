@@ -23,10 +23,19 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
-    const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
+    if (newData === null) {
+      const isSuccess = this._pointsModel.removePoint(oldData.id);
 
-    if (isSuccess) {
-      pointController.render(newData);
+      if (isSuccess) {
+        this._removePoints();
+        this.render();
+      }
+    } else {
+      const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
+
+      if (isSuccess) {
+        pointController.render(newData);
+      }
     }
   }
 

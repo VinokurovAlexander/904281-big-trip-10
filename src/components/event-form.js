@@ -27,6 +27,7 @@ export default class EventForm extends AbstractSmartComponent {
 
     this._submitHandler = null;
     this._favoriteClickHandler = null;
+    this._closeBtnClickHandler = null;
 
     this._flatpickr = {
       start: null,
@@ -175,6 +176,11 @@ export default class EventForm extends AbstractSmartComponent {
     this._favoriteClickHandler = handler;
   }
 
+  setCloseBtnClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, handler);
+    this._closeBtnClickHandler = handler;
+  }
+
   _subscribeOnEvents() {
     const element = this.getElement();
 
@@ -220,6 +226,7 @@ export default class EventForm extends AbstractSmartComponent {
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
     this.setFavoriteBtnClickHandler(this._favoriteClickHandler);
+    this.setCloseBtnClickHandler(this._closeBtnClickHandler);
     this._subscribeOnEvents();
   }
 
