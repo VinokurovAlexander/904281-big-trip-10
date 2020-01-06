@@ -70,7 +70,7 @@ export const getEventType = (destination, currentType = null) => {
   });
 };
 
-const generateEvent = () => {
+const generateEvent = (index) => {
   const eventDestination = getRandomArrayItem(cities);
 
   return {
@@ -86,13 +86,14 @@ const generateEvent = () => {
       duration: getDuration(event.date.min, event.date.max)
     },
     isFavorite: false,
+    id: index
   };
 };
 
 export const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
-    .map(generateEvent);
+    .map((it, index) => generateEvent(index + 1));
 };
 
 

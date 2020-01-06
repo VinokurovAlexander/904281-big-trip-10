@@ -9,24 +9,21 @@ const renderPoints = (pointsContainer, points, onDataChange, onViewChange) => {
 };
 
 export default class TripController {
-  constructor(container, points) {
+  constructor(container, pointsModel) {
     this._container = container;
-    this._points = points;
     this._showedPointControllers = [];
+    this._pointsModel = pointsModel;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
   }
 
   _onDataChange(pointController, oldData, newData) {
-    const index = this._points.findIndex((it) => it === oldData);
+    const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
 
-    if (index === -1) {
-      return;
+    if (isSuccess) {
+      pointController.render(newData);
     }
-
-    this._points[index] = newData;
-    pointController.render(newData);
   }
 
   _onViewChange() {
@@ -34,6 +31,8 @@ export default class TripController {
   }
 
   render() {
-    this._showedPointControllers = renderPoints(this._container, this._points, this._onDataChange, this._onViewChange);
+    const points = this._pointsModel.getPoints();
+
+    this._showedPointControllers = renderPoints(this._container, points, this._onDataChange, this._onViewChange);
   }
 }

@@ -10,9 +10,14 @@ import {controls} from "./mock/controls";
 import {filters} from "./mock/filters";
 import {sortItems} from "./mock/sort";
 import {render, RenderPosition} from "./utils/render";
+import Points from "./models/points";
 
 const EVENTS_COUNT = 3;
 const points = generateEvents(EVENTS_COUNT);
+
+const pointsModel = new Points();
+pointsModel.setPoints(points);
+
 
 const tripControlsBlock = document.querySelector(`.trip-controls`);
 render(tripControlsBlock, new TripControlsTab(controls), RenderPosition.AFTERBEGIN);
@@ -31,7 +36,7 @@ if (points.length === 0) {
   render(tripEventsBlock, tripList, RenderPosition.BEFOREEND);
 
   const eventList = tripList.getElement().querySelector(`.trip-events__list`);
-  const tripController = new TripController(eventList, points);
+  const tripController = new TripController(eventList, pointsModel);
   tripController.render();
 }
 
