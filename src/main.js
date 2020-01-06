@@ -3,13 +3,12 @@ import TripControlsTab from "./components/trip-controls";
 import TripList from "./components/trip-list";
 import NoEvents from "./components/no-events";
 import TripController from "./controllers/trip-controller";
-import {generateEvents} from './mock/event';
+import {generateEvents, EVENTS_COUNT} from './mock/event';
 import {controls} from "./mock/controls";
 import {render, RenderPosition} from "./utils/render";
 import Points from "./models/points";
 import FilterController from "./controllers/filter";
 
-const EVENTS_COUNT = 3;
 const points = generateEvents(EVENTS_COUNT);
 
 const pointsModel = new Points();
@@ -35,6 +34,12 @@ if (points.length === 0) {
   const eventList = tripList.getElement().querySelector(`.trip-events__list`);
   const tripController = new TripController(eventList, pointsModel);
   tripController.render();
+  tripController.getMaxId();
+
+  document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
+    tripController.createPoint();
+  });
+
 }
 
 

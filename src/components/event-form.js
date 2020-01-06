@@ -95,7 +95,7 @@ export default class EventForm extends AbstractSmartComponent {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${ucFirst(this._eventTypeName)} at
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${this._eventDestination} list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._eventDestination}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${citiesList}
           </datalist>
@@ -137,7 +137,7 @@ export default class EventForm extends AbstractSmartComponent {
         </button>
       </header>
 
-      <section class="event__details">
+      <section class="event__details" ${this._eventDestination ? `` : `style="display:none"`}>
 
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -221,7 +221,6 @@ export default class EventForm extends AbstractSmartComponent {
       });
     });
   }
-
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);

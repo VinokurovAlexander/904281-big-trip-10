@@ -1,9 +1,10 @@
 import PointController from "./point-controller";
+import {emptyPoint} from "../mock/event";
 
 const renderPoints = (pointsContainer, points, onDataChange, onViewChange) => {
   return points.map((point) => {
     const pointController = new PointController(pointsContainer, onDataChange, onViewChange);
-    pointController.render(point);
+    pointController.render(point, `default`);
     return pointController;
   });
 };
@@ -30,6 +31,11 @@ export default class TripController {
         this._removePoints();
         this.render();
       }
+    } else if (oldData === null) {
+      const newPoints = this._pointsModel.getPoints().unshift(newData);
+      this._pointsModel.setPoints(newPoints);
+      this._removePoints();
+      this.render();
     } else {
       const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
 
@@ -56,5 +62,15 @@ export default class TripController {
   _onFilterChange() {
     this._removePoints();
     this._showedPointControllers = renderPoints(this._container, this._pointsModel.getPoints(), this._onDataChange, this._onViewChange);
+  }
+
+  getMaxId() {
+    return Math.max(...this._pointsModel.getPoints().map((point) => point.id));
+  }
+
+  createPoint() {
+    const newPoint = new PointController(this._container, this._onDataChange, this._onViewChange);
+    const newPointId = this.getMaxId() + 1;
+    newPoint.render(emptyPoint(newPointId), `adding`);
   }
 }

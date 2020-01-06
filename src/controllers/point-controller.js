@@ -6,6 +6,7 @@ import {isEscEvent} from "../utils/esc-key";
 const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
+  ADDING: `adding`
 };
 
 export default class PointController {
@@ -49,9 +50,10 @@ export default class PointController {
     }
   }
 
-  render(point) {
+  render(point, mode) {
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
+    this._mode = mode;
 
     this._pointComponent = new Event(point);
     this._pointEditComponent = new EventForm(point);
@@ -80,11 +82,18 @@ export default class PointController {
       this._onDataChange(this, point, null);
     });
 
-    if (oldPointComponent && oldPointEditComponent) {
-      replace(this._pointComponent, oldPointComponent);
-      replace(this._pointEditComponent, oldPointEditComponent);
-    } else {
-      render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
+    switch (mode) {
+      case Mode.DEFAULT:
+        if (oldPointComponent && oldPointEditComponent) {
+          replace(this._pointComponent, oldPointComponent);
+          replace(this._pointEditComponent, oldPointEditComponent);
+        } else {
+          render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
+        }
+        break;
+      case Mode.ADDING:
+        render(this._container, this._pointComponent, RenderPosition.AFTERBEGIN);
+        this._replacePointToEdit();
     }
   }
 
