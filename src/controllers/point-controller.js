@@ -1,6 +1,6 @@
 import Event from "../components/event";
 import EventForm from "../components/event-form";
-import {render, RenderPosition, replace} from "../utils/render";
+import {render, RenderPosition, replace, remove} from "../utils/render";
 import {isEscEvent} from "../utils/esc-key";
 
 const Mode = {
@@ -82,5 +82,11 @@ export default class PointController {
     } else {
       render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
     }
+  }
+
+  destroy() {
+    remove(this._pointComponent);
+    remove(this._pointEditComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 }

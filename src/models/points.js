@@ -1,10 +1,16 @@
+import {filtersType} from "../mock/filters";
+import {getPointsByFilter} from "../utils/filter";
+
 export default class Points {
   constructor() {
     this._points = [];
+
+    this._activeFilter = filtersType.ALL;
+    this._filterChangeHandler = [];
   }
 
   getPoints() {
-    return this._points;
+    return getPointsByFilter(this._points, this._activeFilter);
   }
 
   setPoints(points) {
@@ -21,5 +27,14 @@ export default class Points {
     this._points = [].concat(this._points.slice(0, index), newPoint, this._points.slice(index + 1));
 
     return true;
+  }
+
+  setFilter(filter) {
+    this._activeFilter = filter;
+    this._filterChangeHandler.forEach((handler) => handler());
+  }
+
+  setFilterChangeHandler(handler) {
+    this._filterChangeHandler.push(handler);
   }
 }

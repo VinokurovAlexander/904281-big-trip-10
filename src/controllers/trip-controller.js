@@ -12,10 +12,14 @@ export default class TripController {
   constructor(container, pointsModel) {
     this._container = container;
     this._showedPointControllers = [];
+
     this._pointsModel = pointsModel;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+    this._onFilterChange = this._onFilterChange.bind(this);
+
+    this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -32,7 +36,16 @@ export default class TripController {
 
   render() {
     const points = this._pointsModel.getPoints();
-
     this._showedPointControllers = renderPoints(this._container, points, this._onDataChange, this._onViewChange);
+  }
+
+  _removePoints() {
+    this._showedPointControllers.forEach((pointController) => pointController.destroy());
+    this._showedPointControllers = [];
+  }
+
+  _onFilterChange() {
+    this._removePoints();
+    this._showedPointControllers = renderPoints(this._container, this._pointsModel.getPoints(), this._onDataChange, this._onViewChange);
   }
 }
