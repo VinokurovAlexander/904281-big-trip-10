@@ -28,6 +28,7 @@ export default class TripController {
       const isSuccess = this._pointsModel.removePoint(oldData.id);
 
       if (isSuccess) {
+        pointController.destroy();
         this._removePoints();
         this.render();
       }
@@ -40,7 +41,7 @@ export default class TripController {
       const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
 
       if (isSuccess) {
-        pointController.render(newData);
+        pointController.render(newData, `default`);
       }
     }
   }
@@ -69,8 +70,11 @@ export default class TripController {
   }
 
   createPoint() {
-    const newPoint = new PointController(this._container, this._onDataChange, this._onViewChange);
+    const newPointController = new PointController(this._container, this._onDataChange, this._onViewChange);
     const newPointId = this.getMaxId() + 1;
-    newPoint.render(emptyPoint(newPointId), `adding`);
+    const newPointMock = emptyPoint(newPointId);
+    this._pointsModel.getPoints().push(newPointMock);
+    newPointController.render(newPointMock, `adding`);
+    this._showedPointControllers.push(newPointController);
   }
 }

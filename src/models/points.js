@@ -18,7 +18,7 @@ export default class Points {
   }
 
   updatePoint(id, newPoint) {
-    const index = this._points.find((it) => it.id === id);
+    const index = this._points.findIndex((it) => it.id === id);
 
     if (index === -1) {
       return false;
@@ -30,7 +30,7 @@ export default class Points {
   }
 
   removePoint(id) {
-    const index = this._points.find((it) => it.id === id);
+    const index = this._points.findIndex((it) => it.id === id);
 
     if (index === -1) {
       return false;

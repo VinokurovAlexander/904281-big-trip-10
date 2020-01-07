@@ -39,7 +39,6 @@ if (points.length === 0) {
   document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
     tripController.createPoint();
   });
-
 }
 
 

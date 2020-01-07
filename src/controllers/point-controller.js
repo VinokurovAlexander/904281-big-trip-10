@@ -38,15 +38,20 @@ export default class PointController {
   }
 
   _onEscKeyDown(evt) {
-    isEscEvent(evt, this._pointEditComponent.reset.bind(this._pointEditComponent));
-    isEscEvent(evt, this._replaceEditToPoint);
-
+    if (this._mode === Mode.ADDING) {
+      isEscEvent(evt, () => remove(this._pointEditComponent));
+    } else {
+      isEscEvent(evt, this._pointEditComponent.reset.bind(this._pointEditComponent));
+      isEscEvent(evt, this._replaceEditToPoint);
+    }
   }
 
   setDefaultView() {
-    if (this._mode !== Mode.DEFAULT) {
+    if (this._mode === Mode.EDIT) {
       this._pointEditComponent.reset();
       this._replaceEditToPoint();
+    } else if (this._mode === Mode.ADDING) {
+      remove(this._pointEditComponent);
     }
   }
 
@@ -78,7 +83,7 @@ export default class PointController {
       this._pointEditComponent.rerender();
     });
 
-    this._pointEditComponent.setCloseBtnClickHandler(() => {
+    this._pointEditComponent.setDeleteBtnClickHandler(() => {
       this._onDataChange(this, point, null);
     });
 
@@ -94,6 +99,8 @@ export default class PointController {
       case Mode.ADDING:
         render(this._container, this._pointComponent, RenderPosition.AFTERBEGIN);
         this._replacePointToEdit();
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+        this._mode = Mode.ADDING;
     }
   }
 
