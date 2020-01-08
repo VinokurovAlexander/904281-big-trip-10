@@ -11,6 +11,7 @@ import {offers} from "../mock/offer";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
 import {getDuration} from "../utils/date";
+import he from "he";
 
 export default class EventForm extends AbstractSmartComponent {
   constructor(event) {
@@ -254,13 +255,13 @@ export default class EventForm extends AbstractSmartComponent {
 
     const formDestination = formData.get(`event-destination`);
     const formImages = Array.from(formElement.querySelectorAll(`.event__photo`)).map((image) => image.src);
-    const startDate = new Date(formData.get(`event-start-time`));
-    const endDate = new Date(formData.get(`event-end-time`));
+    const startDate = new Date(he.encode(formData.get(`event-start-time`)));
+    const endDate = new Date(he.encode(formData.get(`event-end-time`)));
 
     return {
       destination: formDestination,
       type: getEventType(formDestination, formData.get(`event-type`)),
-      price: formData.get(`event-price`),
+      price: he.encode(formData.get(`event-price`)),
       offers: formOffers,
       images: formImages,
       description: formElement.querySelector(`.event__destination-description`).textContent,
