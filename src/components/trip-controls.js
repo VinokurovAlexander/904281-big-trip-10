@@ -1,14 +1,12 @@
 import AbstractComponent from "./abstract-components";
+import {controls} from "../mock/controls";
 
 const createControlsTabTemplate = (control) => (
-  `<a class="trip-tabs__btn ${control.isActive}"
-      href=" ${control.href} ">
-      ${control.title}
-  </a>`
+  `<a class="trip-tabs__btn ${control.isActive}" href=" ${control.href} ">${control.title}</a>`
 );
 
-const createTripControlsTabsTemplate = (controls) => {
-  const controlsList = controls.map((control) => createControlsTabTemplate(control)).join(`\n`);
+const createTripControlsTabsTemplate = () => {
+  const controlsList = Object.values(controls).map((control) => createControlsTabTemplate(control)).join(`\n`);
 
   return (
     `<nav class="trip-controls__trip-tabs  trip-tabs">
@@ -18,13 +16,17 @@ const createTripControlsTabsTemplate = (controls) => {
 };
 
 export default class TripControlsTab extends AbstractComponent {
-  constructor(controls) {
-    super();
-    this.__controls = controls;
+  getTemplate() {
+    return createTripControlsTabsTemplate();
   }
 
-  getTemplate() {
-    return createTripControlsTabsTemplate(this.__controls);
+  setClickHandler(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      if (evt.target.tagName === `A`) {
+        const clickedControl = evt.target.textContent;
+        handler(clickedControl);
+      }
+    });
   }
 }
 

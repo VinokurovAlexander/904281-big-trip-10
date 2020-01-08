@@ -1,6 +1,7 @@
 import PointController from "./point-controller";
 import {emptyPoint} from "../mock/event";
 import {hiddenClass} from "../const";
+import {controls} from "../mock/controls";
 
 const renderPoints = (pointsContainer, points, onDataChange, onViewChange) => {
   return points.map((point) => {
@@ -11,13 +12,15 @@ const renderPoints = (pointsContainer, points, onDataChange, onViewChange) => {
 };
 
 export default class TripController {
-  constructor(container, pointsModel, rootElement) {
+  constructor(container, rootElement, pointsModel, tripControls, statsComponent) {
     this._container = container;
     this._showedPointControllers = [];
     this._rootElement = rootElement;
-
     this._pointsModel = pointsModel;
+    this._tripControls = tripControls;
+    this._statsComponent = statsComponent;
 
+    this._onControlTabsClick = this._onControlTabsClick.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
@@ -55,6 +58,25 @@ export default class TripController {
   render() {
     const points = this._pointsModel.getPoints();
     this._showedPointControllers = renderPoints(this._container, points, this._onDataChange, this._onViewChange);
+
+    this._setHandlers();
+  }
+
+  _setHandlers() {
+    this._tripControls.setClickHandler(this._onControlTabsClick);
+  }
+
+  _onControlTabsClick(type) {
+    switch (type) {
+      case controls.STATS.title:
+        this._hide();
+        this._statsComponent.show();
+        break;
+      case controls.TABLE.title:
+        this._show();
+        this._statsComponent.hide();
+        break;
+    }
   }
 
   _removePoints() {
@@ -80,11 +102,11 @@ export default class TripController {
     this._showedPointControllers.push(newPointController);
   }
 
-  show() {
+  _show() {
     this._rootElement.classList.remove(hiddenClass);
   }
 
-  hide() {
+  _hide() {
     this._rootElement.classList.add(hiddenClass);
   }
 }

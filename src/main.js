@@ -1,14 +1,13 @@
 import TripInfo from "./components/trip-info";
-import TripControlsTab from "./components/trip-controls";
 import TripList from "./components/trip-list";
 import NoEvents from "./components/no-events";
 import TripController from "./controllers/trip-controller";
 import {generateEvents, EVENTS_COUNT} from './mock/event';
-import {controls} from "./mock/controls";
 import {render, RenderPosition} from "./utils/render";
 import Points from "./models/points";
 import FilterController from "./controllers/filter";
 import Stats from "./components/stats";
+import TripControlsTab from "./components/trip-controls";
 
 const points = generateEvents(EVENTS_COUNT);
 
@@ -16,7 +15,8 @@ const pointsModel = new Points();
 pointsModel.setPoints(points);
 
 const tripControlsBlock = document.querySelector(`.trip-controls`);
-render(tripControlsBlock, new TripControlsTab(controls), RenderPosition.AFTERBEGIN);
+const tripControls = new TripControlsTab();
+render(tripControlsBlock, tripControls, RenderPosition.AFTERBEGIN);
 const tripEventsBlock = document.querySelector(`.trip-events`);
 
 const filterController = new FilterController(tripControlsBlock, pointsModel);
@@ -32,18 +32,19 @@ if (points.length === 0) {
   const tripList = new TripList();
   render(tripEventsBlock, tripList, RenderPosition.BEFOREEND);
 
+  const pageBodyContainer = document.querySelector(`.page-main .page-body__container`);
+  const statsComponent = new Stats();
+  render(pageBodyContainer, statsComponent, RenderPosition.BEFOREEND);
+  statsComponent.hide();
+
   const eventList = tripList.getElement().querySelector(`.trip-events__list`);
-  const rootEventsElement = document.querySelector(`.trip-events`);
-  const tripController = new TripController(eventList, pointsModel, rootEventsElement);
+  const tripController = new TripController(eventList, tripEventsBlock, pointsModel, tripControls, statsComponent);
   tripController.render();
   tripController.getMaxId();
 
   document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
     tripController.createPoint();
   });
-
-  const pageBodyContainer = document.querySelector(`.page-main .page-body__container`);
-  render(pageBodyContainer, new Stats(), RenderPosition.BEFOREEND);
 }
 
 
