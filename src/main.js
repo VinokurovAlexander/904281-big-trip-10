@@ -8,6 +8,7 @@ import {controls} from "./mock/controls";
 import {render, RenderPosition} from "./utils/render";
 import Points from "./models/points";
 import FilterController from "./controllers/filter";
+import Stats from "./components/stats";
 
 const points = generateEvents(EVENTS_COUNT);
 
@@ -39,6 +40,9 @@ if (points.length === 0) {
   document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
     tripController.createPoint();
   });
+
+  const pageBodyContainer = document.querySelector(`.page-main .page-body__container`);
+  render(pageBodyContainer, new Stats(), RenderPosition.BEFOREEND);
 }
 
 
