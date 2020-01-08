@@ -1,11 +1,12 @@
 import Event from "../components/event";
 import EventForm from "../components/event-form";
-import {render, RenderPosition, replace} from "../utils/render";
+import {render, RenderPosition, replace, remove} from "../utils/render";
 import {isEscEvent} from "../utils/esc-key";
 
 const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
+  ADDING: `adding`
 };
 
 export default class PointController {
@@ -37,21 +38,27 @@ export default class PointController {
   }
 
   _onEscKeyDown(evt) {
-    isEscEvent(evt, this._pointEditComponent.reset.bind(this._pointEditComponent));
-    isEscEvent(evt, this._replaceEditToPoint);
-
-  }
-
-  setDefaultView() {
-    if (this._mode !== Mode.DEFAULT) {
-      this._pointEditComponent.reset();
-      this._replaceEditToPoint();
+    if (this._mode === Mode.ADDING) {
+      isEscEvent(evt, () => remove(this._pointEditComponent));
+    } else {
+      isEscEvent(evt, this._pointEditComponent.reset.bind(this._pointEditComponent));
+      isEscEvent(evt, this._replaceEditToPoint);
     }
   }
 
-  render(point) {
+  setDefaultView() {
+    if (this._mode === Mode.EDIT) {
+      this._pointEditComponent.reset();
+      this._replaceEditToPoint();
+    } else if (this._mode === Mode.ADDING) {
+      remove(this._pointEditComponent);
+    }
+  }
+
+  render(point, mode) {
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
+    this._mode = mode;
 
     this._pointComponent = new Event(point);
     this._pointEditComponent = new EventForm(point);
@@ -76,11 +83,30 @@ export default class PointController {
       this._pointEditComponent.rerender();
     });
 
-    if (oldPointComponent && oldPointEditComponent) {
-      replace(this._pointComponent, oldPointComponent);
-      replace(this._pointEditComponent, oldPointEditComponent);
-    } else {
-      render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
+    this._pointEditComponent.setDeleteBtnClickHandler(() => {
+      this._onDataChange(this, point, null);
+    });
+
+    switch (mode) {
+      case Mode.DEFAULT:
+        if (oldPointComponent && oldPointEditComponent) {
+          replace(this._pointComponent, oldPointComponent);
+          replace(this._pointEditComponent, oldPointEditComponent);
+        } else {
+          render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
+        }
+        break;
+      case Mode.ADDING:
+        render(this._container, this._pointComponent, RenderPosition.AFTERBEGIN);
+        this._replacePointToEdit();
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+        this._mode = Mode.ADDING;
     }
+  }
+
+  destroy() {
+    remove(this._pointComponent);
+    remove(this._pointEditComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 }

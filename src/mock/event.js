@@ -6,6 +6,7 @@ import {getDescription} from "./event-description";
 import {cities} from "./cities";
 import {ucFirst} from "../utils/utils";
 
+export const EVENTS_COUNT = 3;
 const event = {
   date: {
     min: new Date(`1 December 2020, 9:00`),
@@ -70,7 +71,7 @@ export const getEventType = (destination, currentType = null) => {
   });
 };
 
-const generateEvent = () => {
+const generateEvent = (index) => {
   const eventDestination = getRandomArrayItem(cities);
 
   return {
@@ -86,13 +87,32 @@ const generateEvent = () => {
       duration: getDuration(event.date.min, event.date.max)
     },
     isFavorite: false,
+    id: index
   };
 };
 
 export const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
-    .map(generateEvent);
+    .map((it, index) => generateEvent(index + 1));
+};
+
+export const emptyPoint = (index) => {
+  return {
+    destination: ``,
+    type: getEventType(``, `flight`),
+    price: ``,
+    description: ``,
+    images: [],
+    offers: [],
+    calendar: {
+      start: new Date(),
+      end: new Date(),
+      duration: getDuration(event.date.min, event.date.max)
+    },
+    isFavorite: false,
+    id: index
+  };
 };
 
 
