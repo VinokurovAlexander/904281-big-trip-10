@@ -1,4 +1,5 @@
 import {createElement} from "../utils/utils";
+import {hiddenClass} from "../const";
 
 export default class AbstractComponent {
   constructor() {
@@ -23,5 +24,13 @@ export default class AbstractComponent {
 
   removeElement() {
     this._element = null;
+  }
+
+  show() {
+    this._element.classList.remove(hiddenClass);
+  }
+
+  hide() {
+    this._element.classList.add(hiddenClass);
   }
 }

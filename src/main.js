@@ -33,7 +33,8 @@ if (points.length === 0) {
   render(tripEventsBlock, tripList, RenderPosition.BEFOREEND);
 
   const eventList = tripList.getElement().querySelector(`.trip-events__list`);
-  const tripController = new TripController(eventList, pointsModel);
+  const rootEventsElement = document.querySelector(`.trip-events`);
+  const tripController = new TripController(eventList, pointsModel, rootEventsElement);
   tripController.render();
   tripController.getMaxId();
 

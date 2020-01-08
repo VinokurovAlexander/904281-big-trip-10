@@ -1,5 +1,6 @@
 import PointController from "./point-controller";
 import {emptyPoint} from "../mock/event";
+import {hiddenClass} from "../const";
 
 const renderPoints = (pointsContainer, points, onDataChange, onViewChange) => {
   return points.map((point) => {
@@ -10,9 +11,10 @@ const renderPoints = (pointsContainer, points, onDataChange, onViewChange) => {
 };
 
 export default class TripController {
-  constructor(container, pointsModel) {
+  constructor(container, pointsModel, rootElement) {
     this._container = container;
     this._showedPointControllers = [];
+    this._rootElement = rootElement;
 
     this._pointsModel = pointsModel;
 
@@ -76,5 +78,13 @@ export default class TripController {
     this._pointsModel.getPoints().push(newPointMock);
     newPointController.render(newPointMock, `adding`);
     this._showedPointControllers.push(newPointController);
+  }
+
+  show() {
+    this._rootElement.classList.remove(hiddenClass);
+  }
+
+  hide() {
+    this._rootElement.classList.add(hiddenClass);
   }
 }
