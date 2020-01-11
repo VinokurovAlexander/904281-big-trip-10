@@ -48,7 +48,7 @@ export default class EventForm extends AbstractSmartComponent {
   _createPointTypesList() {
     const createPointTypesItem = (types, group) => {
       return types
-        .filter((type) => type.group === group)
+        .filter((type) =>type.group === group)
         .map((type) => {
           return (`
         <div class="event__type-item">
@@ -64,12 +64,12 @@ export default class EventForm extends AbstractSmartComponent {
     <div class="event__type-list">
       <fieldset class="event__type-group">
         <legend class="visually-hidden">Transfer</legend>
-        ${createPointTypesItem(pointTypes, `transfer`)}
+        ${createPointTypesItem(Object.values(pointTypes), `transfer`)}
       </fieldset>
 
       <fieldset class="event__type-group">
         <legend class="visually-hidden">Activity</legend>
-         ${createPointTypesItem(pointTypes, `activity`)}
+         ${createPointTypesItem(Object.values(pointTypes), `activity`)}
       </fieldset>
     </div>
   `);

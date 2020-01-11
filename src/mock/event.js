@@ -18,53 +18,62 @@ const event = {
   }
 };
 
-export const pointTypes = [
-  {
+export const pointTypes = {
+  TAXI: {
     name: `taxi`,
     group: `transfer`,
+    emoji: `0x1F695`
   },
-  {
+  BUS: {
     name: `bus`,
     group: `transfer`,
+    emoji: `0x1F68C`
   },
-  {
+  TRAIN: {
     name: `train`,
     group: `transfer`,
+    emoji: `0x1F682`
   },
-  {
+  SHIP: {
     name: `ship`,
     group: `transfer`,
+    emoji: `0x1F6F3`
   },
-  {
+  TRANSPORT: {
     name: `transport`,
     group: `transfer`,
+    emoji: `0x1F68A`
   },
-  {
+  DRIVE: {
     name: `drive`,
     group: `transfer`,
+    emoji: `0x1F697`
   },
-  {
+  FLIGHT: {
     name: `flight`,
     group: `transfer`,
+    emoji: `0x2708`
   },
-  {
+  CHECKIN: {
     name: `check-in`,
     group: `activity`,
+    emoji: `0x1F3E8`
   },
-  {
+  SIGHTSEEING: {
     name: `sightseeing`,
     group: `activity`,
+    emoji: `0x1F3DB`
   },
-  {
+  RESTAURANT: {
     name: `restaurant`,
     group: `activity`,
-  },
-];
+    emoji: `0x1F374`
+  }
+};
 
 
 export const getEventType = (destination, currentType = null) => {
-  const type = currentType ? pointTypes.find((pointType) => pointType.name === currentType) : getRandomArrayItem(pointTypes);
-
+  const type = currentType ? pointTypes.find((pointType) => pointType[name] === currentType) : getRandomArrayItem(Object.values(pointTypes));
 
   return Object.assign(type, {
     title: `${ucFirst(type.name)} ${type.group === `transfer` ? `to` : `at`} ${destination}`

@@ -10,6 +10,7 @@ import Stats from "./components/stats";
 import TripControlsTab from "./components/trip-controls";
 
 const points = generateEvents(EVENTS_COUNT);
+console.log(points);
 
 const pointsModel = new Points();
 pointsModel.setPoints(points);
@@ -33,9 +34,10 @@ if (points.length === 0) {
   render(tripEventsBlock, tripList, RenderPosition.BEFOREEND);
 
   const pageBodyContainer = document.querySelector(`.page-main .page-body__container`);
-  const statsComponent = new Stats();
+  const statsComponent = new Stats(pointsModel);
   render(pageBodyContainer, statsComponent, RenderPosition.BEFOREEND);
   statsComponent.hide();
+
 
   const eventList = tripList.getElement().querySelector(`.trip-events__list`);
   const tripController = new TripController(eventList, tripEventsBlock, pointsModel, tripControls, statsComponent);
