@@ -6,7 +6,7 @@ import {getDescription} from "./event-description";
 import {cities} from "./cities";
 import {ucFirst} from "../utils/utils";
 
-export const EVENTS_COUNT = 3;
+export const EVENTS_COUNT = 10;
 const event = {
   date: {
     min: new Date(`1 December 2020, 9:00`),

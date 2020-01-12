@@ -26,20 +26,33 @@ const getLabel = (pointName) => {
   if (pointName === `CHECK-IN`) {
     pointName = `CHECKIN`;
   }
+
   return `${String.fromCodePoint(pointTypes[pointName].emoji)}${pointName} `;
 };
 
 const renderMoneyChart = (moneyCtx, points) => {
-  // const data = {};
-  // points.forEach((point) => {
-  //   data[point.type.name] = point.price;
-  // });
-  //
-  // console.log(data);
-  const data = [];
-  points.forEach((point) => )
+  let data = {};
+  points.forEach((point) => {
+    const pointType = point.type.name;
+    const pointPrice = point.price;
+    if (data[pointType]) {
+      data[pointType] += pointPrice;
+    } else {
+      data[pointType] = pointPrice;
+    }
+  });
 
-  const dataLabels = Object.keys(data).map((pointName) => getLabel(pointName.toUpperCase()));
+  const dataLabels = [];
+  const dataValues = [];
+
+  Object.entries(data)
+    .sort((a, b) => b[1] - a[1])
+    .map((it) => {
+      const type = it[0].toUpperCase();
+      const price = it[1];
+      dataLabels.push(getLabel(type));
+      dataValues.push(price);
+    });
 
   return new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
@@ -47,7 +60,7 @@ const renderMoneyChart = (moneyCtx, points) => {
     data: {
       labels: dataLabels,
       datasets: [{
-        data: Object.values(data),
+        data: dataValues,
         backgroundColor: `white`
       }]
     },
@@ -238,10 +251,10 @@ export default class Stats extends AbstractComponent {
     const moneyCtx = element.querySelector(`.statistics__chart--money`);
     renderMoneyChart(moneyCtx, points);
 
-    const transportCtx = element.querySelector(`.statistics__chart--transport`);
-    renderTransportChart(transportCtx, points);
-
-    const timeCtx = element.querySelector(`.statistics__chart--time`);
-    renderTimeChart(timeCtx, points);
+    // const transportCtx = element.querySelector(`.statistics__chart--transport`);
+    // renderTransportChart(transportCtx, points);
+    //
+    // const timeCtx = element.querySelector(`.statistics__chart--time`);
+    // renderTimeChart(timeCtx, points);
   }
 }
