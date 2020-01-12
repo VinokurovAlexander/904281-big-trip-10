@@ -30,37 +30,32 @@ const getLabel = (pointName) => {
   return `${String.fromCodePoint(pointTypes[pointName].emoji)}${pointName} `;
 };
 
-const renderMoneyChart = (moneyCtx, points) => {
-  let data = {};
-  points.forEach((point) => {
-    const pointType = point.type.name;
-    const pointPrice = point.price;
-    if (data[pointType]) {
-      data[pointType] += pointPrice;
-    } else {
-      data[pointType] = pointPrice;
-    }
-  });
-
-  const dataLabels = [];
-  const dataValues = [];
+const getSortData = (data) => {
+  const sortData = {
+    labels: [],
+    values: []
+  };
 
   Object.entries(data)
     .sort((a, b) => b[1] - a[1])
     .map((it) => {
       const type = it[0].toUpperCase();
-      const price = it[1];
-      dataLabels.push(getLabel(type));
-      dataValues.push(price);
+      const value = it[1];
+      sortData.labels.push(getLabel(type));
+      sortData.values.push(value);
     });
 
-  return new Chart(moneyCtx, {
+  return sortData;
+};
+
+const getChart = (Ctx, sortData, title, formatCb) => {
+  return new Chart(Ctx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: dataLabels,
+      labels: sortData.labels,
       datasets: [{
-        data: dataValues,
+        data: sortData.values,
         backgroundColor: `white`
       }]
     },
@@ -78,7 +73,8 @@ const renderMoneyChart = (moneyCtx, points) => {
             drawBorder: false
           },
           ticks: {
-            display: false
+            display: false,
+            beginAtZero: true,
           }
         }]
       },
@@ -87,7 +83,7 @@ const renderMoneyChart = (moneyCtx, points) => {
       },
       title: {
         display: true,
-        text: `MONEY`,
+        text: title,
         fontSize: 24,
         fontColor: `#000000`,
         position: `left`
@@ -96,11 +92,34 @@ const renderMoneyChart = (moneyCtx, points) => {
         datalabels: {
           anchor: `end`,
           align: `start`,
-          formatter: (value) => `€ ` + value
+          formatter: formatCb
+        }
+      },
+      layout: {
+        padding: {
+          left: 100
         }
       }
     },
   });
+};
+
+const renderMoneyChart = (moneyCtx, points) => {
+  const data = {};
+  points.forEach((point) => {
+    const pointType = point.type.name;
+    const pointPrice = point.price;
+    if (data[pointType]) {
+      data[pointType] += pointPrice;
+    } else {
+      data[pointType] = pointPrice;
+    }
+  });
+
+  const sortData = getSortData(data);
+  const setDatalabelsViewFormat = (value) => `€ ` + value;
+
+  return getChart(moneyCtx, sortData, `MONEY`, setDatalabelsViewFormat);
 };
 
 const renderTransportChart = (transportCtx, points) => {
@@ -114,55 +133,10 @@ const renderTransportChart = (transportCtx, points) => {
     }
   });
 
-  const dataLabels = Object.keys(data).map((pointName) => getLabel(pointName.toUpperCase()));
+  const sortData = getSortData(data);
+  const setDatalabelsViewFormat = (value) => value + `x`;
 
-  return new Chart(transportCtx, {
-    plugins: [ChartDataLabels],
-    type: `horizontalBar`,
-    data: {
-      labels: dataLabels,
-      datasets: [{
-        data: Object.values(data),
-        backgroundColor: `white`
-      }]
-    },
-    options: {
-      scales: {
-        yAxes: [{
-          gridLines: {
-            display: false,
-            drawBorder: false
-          }
-        }],
-        xAxes: [{
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          ticks: {
-            display: false
-          }
-        }]
-      },
-      legend: {
-        display: false
-      },
-      title: {
-        display: true,
-        text: `TRANSPORT`,
-        fontSize: 24,
-        fontColor: `#000000`,
-        position: `left`
-      },
-      plugins: {
-        datalabels: {
-          anchor: `end`,
-          align: `start`,
-          formatter: (value) => value + `x`
-        }
-      }
-    },
-  });
+  return getChart(transportCtx, sortData, `TRANSPORT`, setDatalabelsViewFormat);
 };
 
 const renderTimeChart = (timeCtx, points) => {
@@ -180,56 +154,12 @@ const renderTimeChart = (timeCtx, points) => {
     }
   });
 
-  Object.keys(data).map((key) => data[key] = Math.floor(data[key] / 60));
-  const dataLabels = Object.keys(data).map((pointName) => getLabel(pointName.toUpperCase()));
+  const sortData = getSortData(data);
+  sortData.values = sortData.values.map((time) => Math.floor(time / 60));
 
-  return new Chart(timeCtx, {
-    plugins: [ChartDataLabels],
-    type: `horizontalBar`,
-    data: {
-      labels: dataLabels,
-      datasets: [{
-        data: Object.values(data),
-        backgroundColor: `white`
-      }]
-    },
-    options: {
-      scales: {
-        yAxes: [{
-          gridLines: {
-            display: false,
-            drawBorder: false
-          }
-        }],
-        xAxes: [{
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          ticks: {
-            display: false
-          }
-        }]
-      },
-      legend: {
-        display: false
-      },
-      title: {
-        display: true,
-        text: `TIME SPENT`,
-        fontSize: 24,
-        fontColor: `#000000`,
-        position: `left`
-      },
-      plugins: {
-        datalabels: {
-          anchor: `end`,
-          align: `start`,
-          formatter: (value) => value + `H`
-        }
-      }
-    },
-  });
+  const setDatalabelsViewFormat = (value) => value + `H`;
+
+  return getChart(timeCtx, sortData, `TIME SPENT`, setDatalabelsViewFormat);
 };
 
 export default class Stats extends AbstractComponent {
@@ -251,10 +181,10 @@ export default class Stats extends AbstractComponent {
     const moneyCtx = element.querySelector(`.statistics__chart--money`);
     renderMoneyChart(moneyCtx, points);
 
-    // const transportCtx = element.querySelector(`.statistics__chart--transport`);
-    // renderTransportChart(transportCtx, points);
-    //
-    // const timeCtx = element.querySelector(`.statistics__chart--time`);
-    // renderTimeChart(timeCtx, points);
+    const transportCtx = element.querySelector(`.statistics__chart--transport`);
+    renderTransportChart(transportCtx, points);
+
+    const timeCtx = element.querySelector(`.statistics__chart--time`);
+    renderTimeChart(timeCtx, points);
   }
 }

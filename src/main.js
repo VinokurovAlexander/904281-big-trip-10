@@ -10,7 +10,6 @@ import Stats from "./components/stats";
 import TripControlsTab from "./components/trip-controls";
 
 const points = generateEvents(EVENTS_COUNT);
-console.log(points);
 
 const pointsModel = new Points();
 pointsModel.setPoints(points);
