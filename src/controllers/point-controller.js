@@ -55,13 +55,13 @@ export default class PointController {
     }
   }
 
-  render(point, destinations, mode) {
+  render(point, data, mode) {
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
     this._mode = mode;
 
     this._pointComponent = new Event(point);
-    this._pointEditComponent = new EventForm(point, destinations);
+    this._pointEditComponent = new EventForm(point, data.destinations, data.offers);
 
     this._pointComponent.setOpenFormHandler(() => {
       this._replacePointToEdit();

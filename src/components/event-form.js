@@ -3,16 +3,14 @@ import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
 import {ucFirst} from "../utils/utils";
 import AbstractSmartComponent from "./abstract-smart-component";
-import {generateOffers} from "../mock/offer";
 import {pointTypes, getEventType} from "../mock/event";
-import {offers} from "../mock/offer";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
 import {getDuration} from "../utils/date";
 import he from "he";
 
 export default class EventForm extends AbstractSmartComponent {
-  constructor(event, destinations) {
+  constructor(event, destinations, allOffers) {
     super();
 
     this._event = event;
@@ -25,6 +23,7 @@ export default class EventForm extends AbstractSmartComponent {
     this._eventEnd = this._event.calendar.end;
 
     this._destinations = destinations;
+    this._offers = allOffers;
 
     this._submitHandler = null;
     this._favoriteClickHandler = null;
@@ -189,7 +188,11 @@ export default class EventForm extends AbstractSmartComponent {
       if (evt.target.tagName === `INPUT`) {
         const eventType = evt.target.value;
         this._eventTypeName = `${eventType}`;
-        this._eventOffers = generateOffers();
+        this._offers.map((offer) => {
+          if (offer.type === eventType) {
+            this._eventOffers = offer.offers;
+          }
+        });
 
         this.rerender();
       }
@@ -250,15 +253,23 @@ export default class EventForm extends AbstractSmartComponent {
   getData() {
     const formElement = this.getElement();
     const formData = new FormData(formElement);
+    const pointType = formData.get(`event-type`);
 
-    const formOffers = [];
-    Array.from(formElement.querySelectorAll(`.event__offer-checkbox`)).forEach((currentOffer) => {
-      const currentOfferType = currentOffer.name.slice(currentOffer.name.lastIndexOf(`-`) + 1);
-      formOffers.push(offers.find((offer) => offer.type === currentOfferType));
+    let formOffers = [];
+    this._offers.map((offer) => {
+      if (offer.name === pointType) {
+        formOffers = offer.offers;
+      }
     });
 
     const formDestination = formData.get(`event-destination`);
-    const formImages = Array.from(formElement.querySelectorAll(`.event__photo`)).map((image) => image.src);
+    let formImages = [];
+    this._destinations.map((destination) => {
+      if (destination.name === formDestination) {
+        formImages = destination.pictures.map((image) => image.src);
+      }
+    });
+
     const startDate = new Date(he.encode(formData.get(`event-start-time`)));
     const endDate = new Date(he.encode(formData.get(`event-end-time`)));
 

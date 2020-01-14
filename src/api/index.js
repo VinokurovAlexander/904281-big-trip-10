@@ -28,8 +28,11 @@ export default class Api {
   }
 
   getDestinations() {
-    return this._load({url: `destinations`})
-      .then((response) => response.json());
+    return this._getData(`destinations`);
+  }
+
+  getOffers() {
+    return this._getData(`offers`);
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
@@ -40,5 +43,10 @@ export default class Api {
       .catch((err) => {
         throw err;
       });
+  }
+
+  _getData(address) {
+    return this._load({url: address})
+      .then((response) => response.json());
   }
 }
