@@ -77,7 +77,7 @@ export default class EventForm extends AbstractSmartComponent {
 
   _createEditEventFormTemplate() {
     const offersList = this._eventOffers.map((offer) => createInputOfferTemplate(offer)).join(`\n`);
-    const images = this._event.images.map((image) => createEventImageTemplate(image)).join(`\n`);
+    const images = this._event.images.map((image) => createEventImageTemplate(image.src)).join(`\n`);
     const citiesList = cities.map((city) => createCityOptionTemplate(city)).join(`\n`);
 
     return (
