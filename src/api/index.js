@@ -27,6 +27,11 @@ export default class Api {
       .then(Point.parsePoints);
   }
 
+  getDestinations() {
+    return this._load({url: `destinations`})
+      .then((response) => response.json());
+  }
+
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 

@@ -1,8 +1,6 @@
 import {createInputOfferTemplate} from "./offer-input";
 import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
-import {getDescription} from "../mock/event-description";
-import {cities} from "../mock/cities";
 import {ucFirst} from "../utils/utils";
 import AbstractSmartComponent from "./abstract-smart-component";
 import {generateOffers} from "../mock/offer";
@@ -14,7 +12,7 @@ import {getDuration} from "../utils/date";
 import he from "he";
 
 export default class EventForm extends AbstractSmartComponent {
-  constructor(event) {
+  constructor(event, destinations) {
     super();
 
     this._event = event;
@@ -25,6 +23,8 @@ export default class EventForm extends AbstractSmartComponent {
     this._eventIsFavorite = this._event.isFavorite;
     this._eventStart = this._event.calendar.start;
     this._eventEnd = this._event.calendar.end;
+
+    this._destinations = destinations;
 
     this._submitHandler = null;
     this._favoriteClickHandler = null;
@@ -78,7 +78,7 @@ export default class EventForm extends AbstractSmartComponent {
   _createEditEventFormTemplate() {
     const offersList = this._eventOffers.map((offer) => createInputOfferTemplate(offer)).join(`\n`);
     const images = this._event.images.map((image) => createEventImageTemplate(image.src)).join(`\n`);
-    const citiesList = cities.map((city) => createCityOptionTemplate(city)).join(`\n`);
+    const citiesList = this._destinations.map((city) => createCityOptionTemplate(city)).join(`\n`);
 
     return (
       `<form class="event  event--edit" action="#" method="post">
@@ -197,14 +197,18 @@ export default class EventForm extends AbstractSmartComponent {
 
     element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
       const currentCity = evt.target.value;
-      if (cities.includes(currentCity)) {
-        this._eventDescription = getDescription();
-        this._eventDestination = currentCity;
-        evt.target.setCustomValidity(``);
-        this.rerender();
-      } else {
-        evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
-      }
+
+      this._destinations.map((city) => {
+        if (currentCity === city.name) {
+          this._eventDescription = city.description;
+          this._eventDestination = city.name;
+
+          evt.target.setCustomValidity(``);
+          this.rerender();
+        } else {
+          evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
+        }
+      });
     });
 
     Array.from(element.querySelectorAll(`.event__input--time`)).map((dateElement) => {

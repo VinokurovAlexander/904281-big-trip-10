@@ -3,10 +3,11 @@ import {emptyPoint} from "../mock/event";
 import {hiddenClass} from "../const";
 import {controls} from "../mock/controls";
 
-const renderPoints = (pointsContainer, points, onDataChange, onViewChange) => {
-  return points.map((point) => {
+const renderPoints = (pointsContainer, data, onDataChange, onViewChange) => {
+  return data.points.map((point) => {
     const pointController = new PointController(pointsContainer, onDataChange, onViewChange);
-    pointController.render(point, `default`);
+    pointController.render(point, data.destinations,  `default`);
+
     return pointController;
   });
 };
@@ -56,8 +57,12 @@ export default class TripController {
   }
 
   render() {
-    const points = this._pointsModel.getPoints();
-    this._showedPointControllers = renderPoints(this._container, points, this._onDataChange, this._onViewChange);
+    const data = {
+      destinations: this._pointsModel.getDestinations(),
+      points: this._pointsModel.getPoints()
+    };
+
+    this._showedPointControllers = renderPoints(this._container, data, this._onDataChange, this._onViewChange);
 
     this._setHandlers();
   }

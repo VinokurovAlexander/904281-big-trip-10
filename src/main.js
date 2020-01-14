@@ -14,7 +14,6 @@ const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 const api = new Api(END_POINT, AUTHORIZATION);
 
-
 api.getPoints()
   .then((points) => {
     const tripControlsBlock = document.querySelector(`.trip-controls`);
@@ -34,24 +33,26 @@ api.getPoints()
 
       const pointsModel = new Points();
       pointsModel.setPoints(points);
+      api.getDestinations()
+        .then((destinations) => pointsModel.setDestinations(destinations))
+        .then(() => {
+          const filterController = new FilterController(tripControlsBlock, pointsModel);
+          filterController.render();
 
-      const filterController = new FilterController(tripControlsBlock, pointsModel);
-      filterController.render();
+          const pageBodyContainer = document.querySelector(`.page-main .page-body__container`);
+          const statsComponent = new Stats(pointsModel);
+          render(pageBodyContainer, statsComponent, RenderPosition.BEFOREEND);
+          statsComponent.hide();
 
-      const pageBodyContainer = document.querySelector(`.page-main .page-body__container`);
-      const statsComponent = new Stats(pointsModel);
-      render(pageBodyContainer, statsComponent, RenderPosition.BEFOREEND);
-      statsComponent.hide();
+          const eventList = tripList.getElement().querySelector(`.trip-events__list`);
+          const tripController = new TripController(eventList, tripEventsBlock, pointsModel, tripControls, statsComponent);
+          tripController.render();
+          tripController.getMaxId();
 
-      const eventList = tripList.getElement().querySelector(`.trip-events__list`);
-      const tripController = new TripController(eventList, tripEventsBlock, pointsModel, tripControls, statsComponent);
-
-      tripController.render();
-      tripController.getMaxId();
-
-      document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
-        tripController.createPoint();
-      });
+          document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
+            tripController.createPoint();
+          });
+        });
     }
   });
 
