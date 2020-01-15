@@ -13,13 +13,14 @@ const renderPoints = (pointsContainer, points, data, onDataChange, onViewChange)
 };
 
 export default class TripController {
-  constructor(container, rootElement, pointsModel, tripControls, statsComponent) {
+  constructor(container, rootElement, pointsModel, tripControls, statsComponent, api) {
     this._container = container;
     this._showedPointControllers = [];
     this._rootElement = rootElement;
     this._pointsModel = pointsModel;
     this._tripControls = tripControls;
     this._statsComponent = statsComponent;
+    this._api = api;
 
     this._data = {
       destinations: pointsModel.getDestinations(),
@@ -49,11 +50,15 @@ export default class TripController {
       this._removePoints();
       this.render();
     } else {
-      const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
-
-      if (isSuccess) {
-        pointController.render(newData, this._data, `default`);
-      }
+      // const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
+      //
+      // if (isSuccess) {
+      //   pointController.render(newData, this._data, `default`);
+      // }
+      this._api.updatePoint(oldData.id, newData)
+        .then((pointModel) => {
+          console.log(pointModel);
+        });
     }
   }
 
@@ -93,7 +98,7 @@ export default class TripController {
 
   _onFilterChange() {
     this._removePoints();
-    this._showedPointControllers = renderPoints(this._container, this._pointsModel.getPoints(), this._onDataChange, this._onViewChange);
+    this._showedPointControllers = renderPoints(this._container, this._pointsModel.getPoints(), this._data, this._onDataChange, this._onViewChange);
   }
 
   getMaxId() {

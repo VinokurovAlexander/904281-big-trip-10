@@ -21,17 +21,17 @@ export default class Point {
   toRAW() {
     return {
       'id': this.id,
-      'base_price': this.price,
-      'offers': this.offers,
-      'is_favorite': this.isFavorite,
       'type': this.type.name,
+      'date_from': this.calendar.start.toISOString(),
+      'date_to': this.calendar.end.toISOString(),
       'destination': {
         'name': this.destination,
         'description': this.description,
         'pictures': this.images
       },
-      'date_from': this.calendar.start.toISOString(),
-      'date_to': this.calendar.end.toISOString(),
+      'base_price': Number(this.price),
+      'is_favorite': this.isFavorite,
+      'offers': this.offers,
     };
   }
 

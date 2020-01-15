@@ -9,7 +9,7 @@ import Stats from "./components/stats";
 import TripControlsTab from "./components/trip-controls";
 import Api from "./api";
 
-const AUTHORIZATION = `Basic sfEfcSoFEYdexm=`;
+const AUTHORIZATION = `Basic sf4SoFEdfYde`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 const api = new Api(END_POINT, AUTHORIZATION);
@@ -46,7 +46,7 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()]).then((val
     statsComponent.hide();
 
     const eventList = tripList.getElement().querySelector(`.trip-events__list`);
-    const tripController = new TripController(eventList, tripEventsBlock, pointsModel, tripControls, statsComponent);
+    const tripController = new TripController(eventList, tripEventsBlock, pointsModel, tripControls, statsComponent, api);
     tripController.render();
     tripController.getMaxId();
 

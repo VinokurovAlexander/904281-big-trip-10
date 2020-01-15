@@ -23,7 +23,11 @@ export default class Api {
 
   getPoints() {
     return this._load({url: `points`})
-      .then((response) => response.json())
+      .then((response) => {
+        const result = response.json();
+        console.log(result);
+        return result;
+      })
       .then(Point.parsePoints);
   }
 
