@@ -21,6 +21,11 @@ export default class TripController {
     this._tripControls = tripControls;
     this._statsComponent = statsComponent;
 
+    this._data = {
+      destinations: pointsModel.getDestinations(),
+      offers: pointsModel.getOffers()
+    };
+
     this._onControlTabsClick = this._onControlTabsClick.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
@@ -47,7 +52,7 @@ export default class TripController {
       const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
 
       if (isSuccess) {
-        pointController.render(newData, `default`);
+        pointController.render(newData, this._data, `default`);
       }
     }
   }
@@ -58,12 +63,8 @@ export default class TripController {
 
   render() {
     const points = this._pointsModel.getPoints();
-    const data = {
-      destinations: this._pointsModel.getDestinations(),
-      offers: this._pointsModel.getOffers()
-    };
 
-    this._showedPointControllers = renderPoints(this._container, points, data, this._onDataChange, this._onViewChange);
+    this._showedPointControllers = renderPoints(this._container, points, this._data, this._onDataChange, this._onViewChange);
 
     this._setHandlers();
   }

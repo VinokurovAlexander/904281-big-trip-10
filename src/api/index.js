@@ -49,4 +49,15 @@ export default class Api {
     return this._load({url: address})
       .then((response) => response.json());
   }
+
+  updatePoint(id, data) {
+    return this._load({
+      url: `points/${id}`,
+      method: Method.PUT,
+      body: JSON.stringify(data.toRAW()),
+      header: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json())
+      .then(Point.parsePoint);
+  }
 }

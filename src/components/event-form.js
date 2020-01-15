@@ -3,11 +3,9 @@ import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
 import {ucFirst} from "../utils/utils";
 import AbstractSmartComponent from "./abstract-smart-component";
-import {pointTypes, getEventType} from "../mock/event";
+import {pointTypes} from "../mock/event";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
-import {getDuration} from "../utils/date";
-import he from "he";
 
 export default class EventForm extends AbstractSmartComponent {
   constructor(event, destinations, allOffers) {
@@ -22,8 +20,10 @@ export default class EventForm extends AbstractSmartComponent {
     this._eventStart = this._event.calendar.start;
     this._eventEnd = this._event.calendar.end;
 
-    this._destinations = destinations;
-    this._offers = allOffers;
+    this.destinations = destinations;
+    this.allOffers = allOffers;
+
+    this.id = event.id;
 
     this._submitHandler = null;
     this._favoriteClickHandler = null;
@@ -77,7 +77,7 @@ export default class EventForm extends AbstractSmartComponent {
   _createEditEventFormTemplate() {
     const offersList = this._eventOffers.map((offer) => createInputOfferTemplate(offer)).join(`\n`);
     const images = this._event.images.map((image) => createEventImageTemplate(image.src)).join(`\n`);
-    const citiesList = this._destinations.map((city) => createCityOptionTemplate(city)).join(`\n`);
+    const citiesList = this.destinations.map((city) => createCityOptionTemplate(city)).join(`\n`);
 
     return (
       `<form class="event  event--edit" action="#" method="post">
@@ -188,7 +188,7 @@ export default class EventForm extends AbstractSmartComponent {
       if (evt.target.tagName === `INPUT`) {
         const eventType = evt.target.value;
         this._eventTypeName = `${eventType}`;
-        this._offers.map((offer) => {
+        this.allOffers.map((offer) => {
           if (offer.type === eventType) {
             this._eventOffers = offer.offers;
           }
@@ -201,7 +201,7 @@ export default class EventForm extends AbstractSmartComponent {
     element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
       const currentCity = evt.target.value;
 
-      this._destinations.map((city) => {
+      this.destinations.map((city) => {
         if (currentCity === city.name) {
           this._eventDescription = city.description;
           this._eventDestination = city.name;
@@ -251,42 +251,7 @@ export default class EventForm extends AbstractSmartComponent {
   }
 
   getData() {
-    const formElement = this.getElement();
-    const formData = new FormData(formElement);
-    const pointType = formData.get(`event-type`);
-
-    let formOffers = [];
-    this._offers.map((offer) => {
-      if (offer.name === pointType) {
-        formOffers = offer.offers;
-      }
-    });
-
-    const formDestination = formData.get(`event-destination`);
-    let formImages = [];
-    this._destinations.map((destination) => {
-      if (destination.name === formDestination) {
-        formImages = destination.pictures.map((image) => image.src);
-      }
-    });
-
-    const startDate = new Date(he.encode(formData.get(`event-start-time`)));
-    const endDate = new Date(he.encode(formData.get(`event-end-time`)));
-
-    return {
-      destination: formDestination,
-      type: getEventType(formDestination, formData.get(`event-type`)),
-      price: he.encode(formData.get(`event-price`)),
-      offers: formOffers,
-      images: formImages,
-      description: formElement.querySelector(`.event__destination-description`).textContent,
-      isFavorite: formElement.querySelector(`.event__favorite-checkbox`).checked,
-      calendar: {
-        start: startDate,
-        end: endDate,
-        duration: getDuration(startDate, endDate)
-      }
-    };
+    return new FormData(this.getElement());
   }
 
   _applyFlatpickr() {

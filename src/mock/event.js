@@ -14,52 +14,52 @@ const event = {
 };
 
 export const pointTypes = {
-  TAXI: {
+  'taxi': {
     name: `taxi`,
     group: `transfer`,
     emoji: `0x1F695`
   },
-  BUS: {
+  'bus': {
     name: `bus`,
     group: `transfer`,
     emoji: `0x1F68C`
   },
-  TRAIN: {
+  'train': {
     name: `train`,
     group: `transfer`,
     emoji: `0x1F682`
   },
-  SHIP: {
+  'ship': {
     name: `ship`,
     group: `transfer`,
     emoji: `0x1F6F3`
   },
-  TRANSPORT: {
+  'transport': {
     name: `transport`,
     group: `transfer`,
     emoji: `0x1F68A`
   },
-  DRIVE: {
+  'drive': {
     name: `drive`,
     group: `transfer`,
     emoji: `0x1F697`
   },
-  FLIGHT: {
+  'flight': {
     name: `flight`,
     group: `transfer`,
     emoji: `0x2708`
   },
-  CHECKIN: {
+  'check-in': {
     name: `check-in`,
     group: `activity`,
     emoji: `0x1F3E8`
   },
-  SIGHTSEEING: {
+  'sightseeing': {
     name: `sightseeing`,
     group: `activity`,
     emoji: `0x1F3DB`
   },
-  RESTAURANT: {
+  'restaurant': {
     name: `restaurant`,
     group: `activity`,
     emoji: `0x1F374`
@@ -67,10 +67,6 @@ export const pointTypes = {
 };
 
 export const getEventType = (destination, currentType = null) => {
-  if (currentType === `CHECK-IN`) {
-    currentType = `CHECKIN`;
-  }
-
   let type = {};
 
   if (!currentType) {

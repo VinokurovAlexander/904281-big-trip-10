@@ -39,7 +39,7 @@ const getSortData = (data) => {
   Object.entries(data)
     .sort((a, b) => b[1] - a[1])
     .map((it) => {
-      const type = it[0].toUpperCase();
+      const type = it[0];
       const value = it[1];
       sortData.labels.push(getLabel(type));
       sortData.values.push(value);
