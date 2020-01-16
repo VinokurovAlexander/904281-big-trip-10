@@ -23,11 +23,7 @@ export default class Api {
 
   getPoints() {
     return this._load({url: `points`})
-      .then((response) => {
-        const result = response.json();
-        console.log(result);
-        return result;
-      })
+      .then((response) => response.json())
       .then(Point.parsePoints);
   }
 
@@ -59,7 +55,7 @@ export default class Api {
       url: `points/${id}`,
       method: Method.PUT,
       body: JSON.stringify(data.toRAW()),
-      header: new Headers({'Content-Type': `application/json`})
+      headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
       .then(Point.parsePoint);

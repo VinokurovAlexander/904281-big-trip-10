@@ -41,25 +41,26 @@ export default class TripController {
 
       if (isSuccess) {
         pointController.destroy();
-        this._removePoints();
-        this.render();
+        this._updatePoints();
       }
     } else if (oldData === null) {
       const newPoints = this._pointsModel.getPoints().unshift(newData);
       this._pointsModel.setPoints(newPoints);
-      this._removePoints();
-      this.render();
+      this._updatePoints();
     } else {
-      // const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
-      //
-      // if (isSuccess) {
-      //   pointController.render(newData, this._data, `default`);
-      // }
       this._api.updatePoint(oldData.id, newData)
-        .then((pointModel) => {
-          console.log(pointModel);
+        .then((newPoint) => {
+          const isSuccess = this._pointsModel.updatePoint(oldData.id, newPoint);
+          if (isSuccess) {
+            pointController.render(newPoint, this._data, `default`);
+          }
         });
     }
+  }
+
+  _updatePoints() {
+    this._removePoints();
+    this.render();
   }
 
   _onViewChange() {
