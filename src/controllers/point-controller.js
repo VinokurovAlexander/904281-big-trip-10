@@ -120,7 +120,7 @@ export default class PointController {
     const pointType = formData.get(`event-type`);
 
     let formOffers = [];
-    this._pointEditComponent.allOffers.map((offer) => {
+    this._pointEditComponent.allOffers.forEach((offer) => {
       if (offer.type === pointType) {
         formOffers = offer.offers;
       }
@@ -129,7 +129,7 @@ export default class PointController {
     const formDestination = formData.get(`event-destination`);
     let formImages = [];
     let pointDescription = ``;
-    this._pointEditComponent.destinations.map((destination) => {
+    this._pointEditComponent.destinations.forEach((destination) => {
       if (destination.name === formDestination) {
         formImages = destination.pictures;
         pointDescription = destination.description;

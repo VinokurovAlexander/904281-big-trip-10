@@ -188,7 +188,7 @@ export default class EventForm extends AbstractSmartComponent {
       if (evt.target.tagName === `INPUT`) {
         const eventType = evt.target.value;
         this._eventTypeName = `${eventType}`;
-        this.allOffers.map((offer) => {
+        this.allOffers.forEach((offer) => {
           if (offer.type === eventType) {
             this._eventOffers = offer.offers;
           }
