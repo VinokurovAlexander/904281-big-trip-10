@@ -1,12 +1,7 @@
-import {getRandomArrayItem, getRandomIntegerNumber} from '../utils/random';
+import {getRandomArrayItem} from '../utils/random';
 import {getDuration} from "../utils/date";
-import {generateOffers} from "./offer";
-import {getImage} from "./event-images";
-import {getDescription} from "./event-description";
-import {cities} from "./cities";
 import {ucFirst} from "../utils/utils";
 
-export const EVENTS_COUNT = 10;
 const event = {
   date: {
     min: new Date(`1 December 2020, 9:00`),
@@ -19,91 +14,74 @@ const event = {
 };
 
 export const pointTypes = {
-  TAXI: {
+  'taxi': {
     name: `taxi`,
     group: `transfer`,
     emoji: `0x1F695`
   },
-  BUS: {
+  'bus': {
     name: `bus`,
     group: `transfer`,
     emoji: `0x1F68C`
   },
-  TRAIN: {
+  'train': {
     name: `train`,
     group: `transfer`,
     emoji: `0x1F682`
   },
-  SHIP: {
+  'ship': {
     name: `ship`,
     group: `transfer`,
     emoji: `0x1F6F3`
   },
-  TRANSPORT: {
+  'transport': {
     name: `transport`,
     group: `transfer`,
     emoji: `0x1F68A`
   },
-  DRIVE: {
+  'drive': {
     name: `drive`,
     group: `transfer`,
     emoji: `0x1F697`
   },
-  FLIGHT: {
+  'flight': {
     name: `flight`,
     group: `transfer`,
     emoji: `0x2708`
   },
-  CHECKIN: {
+  'check-in': {
     name: `check-in`,
     group: `activity`,
     emoji: `0x1F3E8`
   },
-  SIGHTSEEING: {
+  'sightseeing': {
     name: `sightseeing`,
     group: `activity`,
     emoji: `0x1F3DB`
   },
-  RESTAURANT: {
+  'restaurant': {
     name: `restaurant`,
     group: `activity`,
     emoji: `0x1F374`
   }
 };
 
-
 export const getEventType = (destination, currentType = null) => {
-  const type = currentType ? pointTypes.find((pointType) => pointType[name] === currentType) : getRandomArrayItem(Object.values(pointTypes));
+  let type = {};
+
+  if (!currentType) {
+    type = getRandomArrayItem(Object.values(pointTypes));
+  } else {
+    Object.keys(pointTypes).map((pointType) => {
+      if (pointType === currentType) {
+        type = Object.assign({}, pointTypes[currentType]);
+      }
+    });
+  }
 
   return Object.assign(type, {
     title: `${ucFirst(type.name)} ${type.group === `transfer` ? `to` : `at`} ${destination}`
   });
-};
-
-const generateEvent = (index) => {
-  const eventDestination = getRandomArrayItem(cities);
-
-  return {
-    destination: eventDestination,
-    type: getEventType(eventDestination),
-    price: getRandomIntegerNumber(event.price.min, event.price.max),
-    description: getDescription(),
-    images: getImage(),
-    offers: generateOffers(),
-    calendar: {
-      start: event.date.min,
-      end: event.date.max,
-      duration: getDuration(event.date.min, event.date.max)
-    },
-    isFavorite: false,
-    id: index
-  };
-};
-
-export const generateEvents = (count) => {
-  return new Array(count)
-    .fill(``)
-    .map((it, index) => generateEvent(index + 1));
 };
 
 export const emptyPoint = (index) => {

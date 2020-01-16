@@ -1,20 +1,14 @@
 import {createInputOfferTemplate} from "./offer-input";
 import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
-import {getDescription} from "../mock/event-description";
-import {cities} from "../mock/cities";
 import {ucFirst} from "../utils/utils";
 import AbstractSmartComponent from "./abstract-smart-component";
-import {generateOffers} from "../mock/offer";
-import {pointTypes, getEventType} from "../mock/event";
-import {offers} from "../mock/offer";
+import {pointTypes} from "../mock/event";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
-import {getDuration} from "../utils/date";
-import he from "he";
 
 export default class EventForm extends AbstractSmartComponent {
-  constructor(event) {
+  constructor(event, destinations, allOffers) {
     super();
 
     this._event = event;
@@ -25,6 +19,11 @@ export default class EventForm extends AbstractSmartComponent {
     this._eventIsFavorite = this._event.isFavorite;
     this._eventStart = this._event.calendar.start;
     this._eventEnd = this._event.calendar.end;
+
+    this.destinations = destinations;
+    this.allOffers = allOffers;
+
+    this.id = event.id;
 
     this._submitHandler = null;
     this._favoriteClickHandler = null;
@@ -76,9 +75,9 @@ export default class EventForm extends AbstractSmartComponent {
   }
 
   _createEditEventFormTemplate() {
-    const offersList = this._eventOffers.map((offer) => createInputOfferTemplate(offer)).join(`\n`);
-    const images = this._event.images.map((image) => createEventImageTemplate(image)).join(`\n`);
-    const citiesList = cities.map((city) => createCityOptionTemplate(city)).join(`\n`);
+    const offersList = this._eventOffers.map((offer, index) => createInputOfferTemplate(offer, index)).join(`\n`);
+    const images = this._event.images.map((image) => createEventImageTemplate(image.src)).join(`\n`);
+    const citiesList = this.destinations.map((city) => createCityOptionTemplate(city)).join(`\n`);
 
     return (
       `<form class="event  event--edit" action="#" method="post">
@@ -189,7 +188,11 @@ export default class EventForm extends AbstractSmartComponent {
       if (evt.target.tagName === `INPUT`) {
         const eventType = evt.target.value;
         this._eventTypeName = `${eventType}`;
-        this._eventOffers = generateOffers();
+        this.allOffers.forEach((offer) => {
+          if (offer.type === eventType) {
+            this._eventOffers = offer.offers;
+          }
+        });
 
         this.rerender();
       }
@@ -197,14 +200,18 @@ export default class EventForm extends AbstractSmartComponent {
 
     element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
       const currentCity = evt.target.value;
-      if (cities.includes(currentCity)) {
-        this._eventDescription = getDescription();
-        this._eventDestination = currentCity;
-        evt.target.setCustomValidity(``);
-        this.rerender();
-      } else {
-        evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
-      }
+
+      this.destinations.map((city) => {
+        if (currentCity === city.name) {
+          this._eventDescription = city.description;
+          this._eventDestination = city.name;
+
+          evt.target.setCustomValidity(``);
+          this.rerender();
+        } else {
+          evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
+        }
+      });
     });
 
     Array.from(element.querySelectorAll(`.event__input--time`)).map((dateElement) => {
@@ -244,34 +251,7 @@ export default class EventForm extends AbstractSmartComponent {
   }
 
   getData() {
-    const formElement = this.getElement();
-    const formData = new FormData(formElement);
-
-    const formOffers = [];
-    Array.from(formElement.querySelectorAll(`.event__offer-checkbox`)).forEach((currentOffer) => {
-      const currentOfferType = currentOffer.name.slice(currentOffer.name.lastIndexOf(`-`) + 1);
-      formOffers.push(offers.find((offer) => offer.type === currentOfferType));
-    });
-
-    const formDestination = formData.get(`event-destination`);
-    const formImages = Array.from(formElement.querySelectorAll(`.event__photo`)).map((image) => image.src);
-    const startDate = new Date(he.encode(formData.get(`event-start-time`)));
-    const endDate = new Date(he.encode(formData.get(`event-end-time`)));
-
-    return {
-      destination: formDestination,
-      type: getEventType(formDestination, formData.get(`event-type`)),
-      price: he.encode(formData.get(`event-price`)),
-      offers: formOffers,
-      images: formImages,
-      description: formElement.querySelector(`.event__destination-description`).textContent,
-      isFavorite: formElement.querySelector(`.event__favorite-checkbox`).checked,
-      calendar: {
-        start: startDate,
-        end: endDate,
-        duration: getDuration(startDate, endDate)
-      }
-    };
+    return new FormData(this.getElement());
   }
 
   _applyFlatpickr() {

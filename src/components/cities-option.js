@@ -1,3 +1,3 @@
 export const createCityOptionTemplate = (city) => (
-  `<option value="${city}"></option>`
+  `<option value="${city.name}"></option>`
 );
