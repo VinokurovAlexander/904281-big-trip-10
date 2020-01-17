@@ -1,5 +1,5 @@
 import Event from "../components/event";
-import EventForm from "../components/event-form";
+import Form from "../components/form";
 import {render, RenderPosition, replace, remove} from "../utils/render";
 import {isEscEvent} from "../utils/esc-key";
 import he from "he";
@@ -10,6 +10,8 @@ const Mode = {
   EDIT: `edit`,
   ADDING: `adding`
 };
+
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export default class PointController {
   constructor(container, onDataChange, onViewChange) {
@@ -63,7 +65,7 @@ export default class PointController {
     this._mode = mode;
 
     this._pointComponent = new Event(point);
-    this._pointEditComponent = new EventForm(point, data.destinations, data.offers);
+    this._pointEditComponent = new Form(point, data.destinations, data.offers);
 
     this._pointComponent.setOpenFormHandler(() => {
       this._replacePointToEdit();
@@ -73,13 +75,17 @@ export default class PointController {
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
 
+      this._pointEditComponent.setData({
+        submitBtnText: `Saving...`
+      });
+
+      this._pointEditComponent.disableButtons(true);
+
       const oldData = point;
       const formData = this._pointEditComponent.getData(evt.target);
       const id = this._pointEditComponent.id;
       const newData = this._parseFormData(formData, id);
       this._onDataChange(this, oldData, newData);
-
-      this._replaceEditToPoint();
     });
 
     this._pointEditComponent.setFavoriteBtnClickHandler(() => {
@@ -90,6 +96,10 @@ export default class PointController {
     });
 
     this._pointEditComponent.setDeleteBtnClickHandler(() => {
+      this._pointEditComponent.setData({
+        deleteBtnText: `Deleting...`
+      });
+      this._pointEditComponent.disableButtons(true);
       this._onDataChange(this, point, null);
     });
 
@@ -153,5 +163,19 @@ export default class PointController {
       'date_from': startDate,
       'date_to': endDate
     });
+  }
+
+  shake() {
+    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._pointEditComponent.getElement().style.animation = ``;
+      this._pointEditComponent.disableButtons(false);
+
+      this._pointEditComponent.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

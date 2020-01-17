@@ -38,6 +38,7 @@ export default class TripController {
 
   _onDataChange(pointController, oldData, newData) {
     if (oldData === emptyPoint) {
+      const destroyedPoint = this._creatingPoint;
       this._creatingPoint = null;
 
       if (newData === null) {
@@ -47,7 +48,10 @@ export default class TripController {
           .then((newPointModel) => {
             this._pointsModel.addPoint(newPointModel);
             pointController.render(newPointModel, this._data, `default`);
-          });
+            destroyedPoint.destroy();
+            this._updatePoints();
+          })
+          .catch(() => pointController.shake());
       }
     } else if (newData === null) {
       this._api.deletePoint(oldData.id)
@@ -57,7 +61,8 @@ export default class TripController {
           if (isSuccess) {
             pointController.destroy();
           }
-        });
+        })
+        .catch(() => pointController.shake());
     } else {
       this._api.updatePoint(oldData.id, newData)
         .then((newPoint) => {
@@ -65,7 +70,9 @@ export default class TripController {
           if (isSuccess) {
             pointController.render(newPoint, this._data, `default`);
           }
-        });
+          this._updatePoints();
+        })
+        .catch(() => pointController.shake());
     }
   }
 
@@ -123,5 +130,10 @@ export default class TripController {
 
   _hide() {
     this._rootElement.classList.add(hiddenClass);
+  }
+
+  _updatePoints() {
+    this._removePoints();
+    this.render();
   }
 }
