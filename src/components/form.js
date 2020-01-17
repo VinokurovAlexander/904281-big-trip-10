@@ -286,6 +286,6 @@ export default class Form extends AbstractSmartComponent {
   }
 
   disableButtons(flag) {
-    this.getElement().querySelectorAll(`button`).forEach((btn) => btn.disabled = flag);
+    this.getElement().querySelectorAll(`button`).forEach((btn) => (btn.disabled = flag));
   }
 }
