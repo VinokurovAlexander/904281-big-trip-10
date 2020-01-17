@@ -65,4 +65,11 @@ export default class Api {
       .then((response) => response.json())
       .then(Point.parsePoint);
   }
+
+  deletePoint(id) {
+    return this._load({
+      url: `points/${id}`,
+      method: Method.DELETE,
+    });
+  }
 }

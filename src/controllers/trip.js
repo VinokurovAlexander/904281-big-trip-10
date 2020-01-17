@@ -1,4 +1,4 @@
-import PointController from "./point-controller";
+import PointController from "./point";
 import {emptyPoint} from "../mock/event";
 import {hiddenClass} from "../const";
 import {controls} from "../mock/controls";
@@ -37,12 +37,14 @@ export default class TripController {
 
   _onDataChange(pointController, oldData, newData) {
     if (newData === null) {
-      const isSuccess = this._pointsModel.removePoint(oldData.id);
+      this._api.deletePoint(oldData.id)
+        .then(() => {
+          const isSuccess = this._pointsModel.removePoint(oldData.id);
 
-      if (isSuccess) {
-        pointController.destroy();
-        this._updatePoints();
-      }
+          if (isSuccess) {
+            pointController.destroy();
+          }
+        });
     } else if (oldData === null) {
       const newPoints = this._pointsModel.getPoints().unshift(newData);
       this._pointsModel.setPoints(newPoints);

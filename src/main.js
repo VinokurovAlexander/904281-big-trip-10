@@ -1,7 +1,7 @@
 import TripInfo from "./components/trip-info";
 import TripList from "./components/trip-list";
 import NoEvents from "./components/no-events";
-import TripController from "./controllers/trip-controller";
+import TripController from "./controllers/trip";
 import {render, RenderPosition} from "./utils/render";
 import Points from "./models/points";
 import FilterController from "./controllers/filter";
