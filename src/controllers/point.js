@@ -36,6 +36,8 @@ export default class PointController {
 
   _replaceEditToPoint() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+
+    this._pointEditComponent.reset();
     replace(this._pointComponent, this._pointEditComponent);
 
     this._mode = Mode.DEFAULT;
@@ -45,14 +47,12 @@ export default class PointController {
     if (this._mode === Mode.ADDING) {
       isEscEvent(evt, () => remove(this._pointEditComponent));
     } else {
-      isEscEvent(evt, this._pointEditComponent.reset.bind(this._pointEditComponent));
       isEscEvent(evt, this._replaceEditToPoint);
     }
   }
 
   setDefaultView() {
     if (this._mode === Mode.EDIT) {
-      this._pointEditComponent.reset();
       this._replaceEditToPoint();
     } else if (this._mode === Mode.ADDING) {
       remove(this._pointEditComponent);

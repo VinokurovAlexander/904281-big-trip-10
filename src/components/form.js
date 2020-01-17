@@ -242,7 +242,6 @@ export default class Form extends AbstractSmartComponent {
 
     element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
       this._eventPrice = evt.target.value;
-      this.rerender();
     });
   }
 
