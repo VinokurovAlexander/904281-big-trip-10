@@ -84,22 +84,19 @@ export const getEventType = (destination, currentType = null) => {
   });
 };
 
-export const emptyPoint = (index) => {
-  return {
-    destination: ``,
-    type: getEventType(``, `flight`),
-    price: ``,
-    description: ``,
-    images: [],
-    offers: [],
-    calendar: {
-      start: new Date(),
-      end: new Date(),
-      duration: getDuration(event.date.min, event.date.max)
-    },
-    isFavorite: false,
-    id: index
-  };
+export const emptyPoint = {
+  destination: ``,
+  type: getEventType(``, `flight`),
+  price: ``,
+  description: ``,
+  images: [],
+  offers: [],
+  calendar: {
+    start: new Date(),
+    end: new Date(),
+    duration: getDuration(event.date.min, event.date.max)
+  },
+  isFavorite: false,
 };
 
 

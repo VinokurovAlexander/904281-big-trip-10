@@ -1,7 +1,7 @@
 import {filtersType} from "../mock/filters";
 import {getPointsByFilter} from "../utils/filter";
 
-export default class Points {
+export default class PointsModel {
   constructor() {
     this._points = [];
     this._destinations = [];
@@ -66,5 +66,9 @@ export default class Points {
 
   setFilterChangeHandler(handler) {
     this._filterChangeHandler.push(handler);
+  }
+
+  addPoint(point) {
+    this._points.unshift(point);
   }
 }

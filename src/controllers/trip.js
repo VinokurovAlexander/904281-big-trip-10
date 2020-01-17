@@ -21,6 +21,7 @@ export default class TripController {
     this._tripControls = tripControls;
     this._statsComponent = statsComponent;
     this._api = api;
+    this._creatingPoint = null;
 
     this._data = {
       destinations: pointsModel.getDestinations(),
@@ -36,7 +37,19 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
-    if (newData === null) {
+    if (oldData === emptyPoint) {
+      this._creatingPoint = null;
+
+      if (newData === null) {
+        pointController.destroy();
+      } else {
+        this._api.addPoint(newData)
+          .then((newPointModel) => {
+            this._pointsModel.addPoint(newPointModel);
+            pointController.render(newPointModel, this._data, `default`);
+          });
+      }
+    } else if (newData === null) {
       this._api.deletePoint(oldData.id)
         .then(() => {
           const isSuccess = this._pointsModel.removePoint(oldData.id);
@@ -45,10 +58,6 @@ export default class TripController {
             pointController.destroy();
           }
         });
-    } else if (oldData === null) {
-      const newPoints = this._pointsModel.getPoints().unshift(newData);
-      this._pointsModel.setPoints(newPoints);
-      this._updatePoints();
     } else {
       this._api.updatePoint(oldData.id, newData)
         .then((newPoint) => {
@@ -58,11 +67,6 @@ export default class TripController {
           }
         });
     }
-  }
-
-  _updatePoints() {
-    this._removePoints();
-    this.render();
   }
 
   _onViewChange() {
@@ -104,17 +108,13 @@ export default class TripController {
     this._showedPointControllers = renderPoints(this._container, this._pointsModel.getPoints(), this._data, this._onDataChange, this._onViewChange);
   }
 
-  getMaxId() {
-    return Math.max(...this._pointsModel.getPoints().map((point) => point.id));
-  }
-
   createPoint() {
-    const newPointController = new PointController(this._container, this._onDataChange, this._onViewChange);
-    const newPointId = this.getMaxId() + 1;
-    const newPointMock = emptyPoint(newPointId);
-    this._pointsModel.getPoints().push(newPointMock);
-    newPointController.render(newPointMock, `adding`);
-    this._showedPointControllers.push(newPointController);
+    if (this._creatingPoint) {
+      return;
+    }
+
+    this._creatingPoint = new PointController(this._container, this._onDataChange, this._onViewChange);
+    this._creatingPoint.render(emptyPoint, this._data, `adding`);
   }
 
   _show() {

@@ -26,9 +26,13 @@ export default class Api {
     this._authorization = authorization;
   }
 
+  _getData(address) {
+    return this._load({url: address})
+      .then((response) => response.json());
+  }
+
   getPoints() {
-    return this._load({url: `points`})
-      .then((response) => response.json())
+    return this._getData(`points`)
       .then(Point.parsePoints);
   }
 
@@ -50,20 +54,23 @@ export default class Api {
       });
   }
 
-  _getData(address) {
-    return this._load({url: address})
-      .then((response) => response.json());
-  }
-
-  updatePoint(id, data) {
+  _addData(httpMethod, data, id = ``) {
     return this._load({
       url: `points/${id}`,
-      method: Method.PUT,
+      method: httpMethod,
       body: JSON.stringify(data.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
       .then(Point.parsePoint);
+  }
+
+  updatePoint(id, data) {
+    return this._addData(Method.PUT, data, id);
+  }
+
+  addPoint(data) {
+    return this._addData(Method.POST, data);
   }
 
   deletePoint(id) {
