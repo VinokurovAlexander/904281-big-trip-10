@@ -24,6 +24,7 @@ export default class Form extends AbstractSmartComponent {
     this._eventIsFavorite = this._event.isFavorite;
     this._eventStart = this._event.calendar.start;
     this._eventEnd = this._event.calendar.end;
+    this._eventPrice = this._event.price;
 
     this._externalData = DefaultData;
 
@@ -128,7 +129,7 @@ export default class Form extends AbstractSmartComponent {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${this._event.price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${this._eventPrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">${submitBtnText}</button>
@@ -238,6 +239,11 @@ export default class Form extends AbstractSmartComponent {
         }
       });
     });
+
+    element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
+      this._eventPrice = evt.target.value;
+      this.rerender();
+    });
   }
 
   recoveryListeners() {
@@ -256,6 +262,7 @@ export default class Form extends AbstractSmartComponent {
     this._eventIsFavorite = event.isFavorite;
     this._eventStart = event.calendar.start;
     this._eventEnd = event.calendar.end;
+    this._eventPrice = event.price;
 
     this.rerender();
   }
