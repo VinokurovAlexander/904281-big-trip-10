@@ -1,9 +1,9 @@
 import TripInfo from "./components/trip-info";
 import TripList from "./components/trip-list";
 import NoEvents from "./components/no-events";
-import TripController from "./controllers/trip-controller";
+import TripController from "./controllers/trip";
 import {render, RenderPosition} from "./utils/render";
-import Points from "./models/points";
+import PointsModel from "./models/points";
 import FilterController from "./controllers/filter";
 import Stats from "./components/stats";
 import TripControlsTab from "./components/trip-controls";
@@ -32,7 +32,7 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()]).then((val
     const tripList = new TripList();
     render(tripEventsBlock, tripList, RenderPosition.BEFOREEND);
 
-    const pointsModel = new Points();
+    const pointsModel = new PointsModel();
     pointsModel.setDestinations(destinations);
     pointsModel.setOffers(offers);
     pointsModel.setPoints(points);
@@ -48,7 +48,6 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()]).then((val
     const eventList = tripList.getElement().querySelector(`.trip-events__list`);
     const tripController = new TripController(eventList, tripEventsBlock, pointsModel, tripControls, statsComponent, api);
     tripController.render();
-    tripController.getMaxId();
 
     document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
       tripController.createPoint();

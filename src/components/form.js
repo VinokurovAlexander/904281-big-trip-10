@@ -7,7 +7,12 @@ import {pointTypes} from "../mock/event";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
 
-export default class EventForm extends AbstractSmartComponent {
+const DefaultData = {
+  deleteBtnText: `Delete`,
+  submitBtnText: `Save`
+};
+
+export default class Form extends AbstractSmartComponent {
   constructor(event, destinations, allOffers) {
     super();
 
@@ -19,6 +24,9 @@ export default class EventForm extends AbstractSmartComponent {
     this._eventIsFavorite = this._event.isFavorite;
     this._eventStart = this._event.calendar.start;
     this._eventEnd = this._event.calendar.end;
+    this._eventPrice = this._event.price;
+
+    this._externalData = DefaultData;
 
     this.destinations = destinations;
     this.allOffers = allOffers;
@@ -74,10 +82,13 @@ export default class EventForm extends AbstractSmartComponent {
   `);
   }
 
-  _createEditEventFormTemplate() {
+  _createEditPointFormTemplate() {
     const offersList = this._eventOffers.map((offer, index) => createInputOfferTemplate(offer, index)).join(`\n`);
     const images = this._event.images.map((image) => createEventImageTemplate(image.src)).join(`\n`);
     const citiesList = this.destinations.map((city) => createCityOptionTemplate(city)).join(`\n`);
+
+    const deleteBtnText = this._externalData.deleteBtnText;
+    const submitBtnText = this._externalData.submitBtnText;
 
     return (
       `<form class="event  event--edit" action="#" method="post">
@@ -118,11 +129,11 @@ export default class EventForm extends AbstractSmartComponent {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${this._event.price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${this._eventPrice}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit">${submitBtnText}</button>
+        <button class="event__reset-btn" type="reset">${deleteBtnText}</button>
 
         <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${this._eventIsFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-1">
@@ -163,7 +174,7 @@ export default class EventForm extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return this._createEditEventFormTemplate();
+    return this._createEditPointFormTemplate(DefaultData);
   }
 
   setSubmitHandler(handler) {
@@ -228,6 +239,10 @@ export default class EventForm extends AbstractSmartComponent {
         }
       });
     });
+
+    element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
+      this._eventPrice = evt.target.value;
+    });
   }
 
   recoveryListeners() {
@@ -246,6 +261,7 @@ export default class EventForm extends AbstractSmartComponent {
     this._eventIsFavorite = event.isFavorite;
     this._eventStart = event.calendar.start;
     this._eventEnd = event.calendar.end;
+    this._eventPrice = event.price;
 
     this.rerender();
   }
@@ -268,5 +284,14 @@ export default class EventForm extends AbstractSmartComponent {
 
     this._flatpickr.start = flatpickrInit(eventStart, this._eventStart);
     this._flatpickr.end = flatpickrInit(eventEnd, this._eventEnd);
+  }
+
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
+  }
+
+  disableButtons(flag) {
+    this.getElement().querySelectorAll(`button`).forEach((btn) => (btn.disabled = flag));
   }
 }
