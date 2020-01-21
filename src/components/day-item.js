@@ -6,7 +6,7 @@ export const createDayItemTemplate = (date, index) => {
     `<li class="trip-days__item  day">
        <div class="day__info">
          <span class="day__counter">${index}</span>
-         <time class="day__date" datetime="date">${moment(date).format(`D MMM`)}</time>
+         <time class="day__date" datetime="date">${date ? moment(date).format(`D MMM`) : ``}</time>
        </div>
        <ul class="trip-events__list">
        </ul>

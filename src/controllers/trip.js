@@ -7,27 +7,7 @@ import {render, remove, RenderPosition} from "../utils/render";
 import moment from "moment";
 import DayItem from "../components/day-item";
 import NoEvents from "../components/no-events";
-
-const renderPoints = (pointsContainer, points, data, onDataChange, onViewChange) => {
-  let showedPointControllers = [];
-  const dates = new Set(points.map((point) => moment(point.calendar.start).format(`YYYY-MM-DD`)));
-
-  Array.from(dates).forEach((date, index) => {
-    const dayItem = new DayItem(date, index + 1);
-
-    points.filter((point) => moment(point.calendar.start).format(`YYYY-MM-DD`) === date)
-      .forEach((filterPoint) => {
-        const pointsList = dayItem.getElement().querySelector(`.trip-events__list`);
-        const pointController = new PointController(pointsList, onDataChange, onViewChange);
-        pointController.render(filterPoint, data, `default`);
-        showedPointControllers.push(pointController);
-      });
-
-    render(pointsContainer, dayItem, RenderPosition.BEFOREEND);
-  });
-
-  return showedPointControllers;
-};
+import Sort from "../components/sort";
 
 const tripInfoBlock = document.querySelector(`.trip-info`);
 
@@ -39,7 +19,9 @@ export default class TripController {
     this._api = api;
     this._creatingPoint = null;
     this._tripInfoComponent = null;
+    this._sortComponent = null;
     this._pointsContainerComponent = new PointsComponent();
+    this._isDefaultSort = true;
 
     this._data = {
       destinations: pointsModel.getDestinations(),
@@ -102,6 +84,8 @@ export default class TripController {
 
   render() {
     const points = this._pointsModel.getPoints();
+    this._sortComponent = new Sort();
+    render(this._container, this._sortComponent, RenderPosition.AFTERBEGIN);
 
     if (points.length === 0) {
       const noEventsComponent = new NoEvents();
@@ -110,7 +94,29 @@ export default class TripController {
       this._tripInfoComponent = new TripInfo(points);
 
       render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
-      this._showedPointControllers = renderPoints(this._pointsContainerComponent.getElement(), points, this._data, this._onDataChange, this._onViewChange);
+      this._showedPointControllers = this._renderPoints(this._pointsContainerComponent.getElement(), points, this._data, this._onDataChange, this._onViewChange);
+
+      this._sortComponent.setChangeSortHandler((sortType) => {
+        let sortedPoints = [];
+
+        switch (sortType) {
+          case `event`:
+            sortedPoints = this._pointsModel.getPoints();
+            this._isDefaultSort = true;
+            break;
+          case `price`:
+            sortedPoints = this._pointsModel.getPoints().sort((a, b) => b.price - a.price);
+            this._isDefaultSort = false;
+            break;
+          case `time`:
+            sortedPoints = this._pointsModel.getPoints().sort((a, b) => b.calendar.end - b.calendar.start - (a.calendar.end - a.calendar.start));
+            this._isDefaultSort = false;
+            break;
+        }
+        this._removePoints();
+        this._showedPointControllers = this._renderPoints(this._pointsContainerComponent.getElement(), sortedPoints, this._data, this._onDataChange, this._onViewChange);
+
+      });
 
       const tripFullPriceElement = tripInfoBlock.querySelector(`.trip-info__cost-value`);
       tripFullPriceElement.textContent = this._getFullPrice(points);
@@ -125,7 +131,7 @@ export default class TripController {
 
   _onFilterChange() {
     this._removePoints();
-    this._showedPointControllers = renderPoints(this._pointsContainerComponent.getElement(), this._pointsModel.getPoints(), this._data, this._onDataChange, this._onViewChange);
+    this._showedPointControllers = this._renderPoints(this._pointsContainerComponent.getElement(), this._pointsModel.getPoints(), this._data, this._onDataChange, this._onViewChange);
   }
 
   createPoint() {
@@ -157,5 +163,31 @@ export default class TripController {
 
   _getFullPrice(points) {
     return points.reduce((price, point) => price + point.price, 0);
+  }
+
+  _renderPoints(pointsContainer, points, data, onDataChange, onViewChange) {
+    let showedPointControllers = [];
+
+    const dates = this._isDefaultSort
+      ? new Set(points.map((point) => moment(point.calendar.start).format(`YYYY-MM-DD`)))
+      : [``];
+
+    Array.from(dates).forEach((date, index) => {
+      const dayItem = this._isDefaultSort ? new DayItem(date, index + 1) : new DayItem(null, ``);
+
+      points.filter((point) => {
+        return this._isDefaultSort ? moment(point.calendar.start).format(`YYYY-MM-DD`) === date : point;
+      })
+        .forEach((filterPoint) => {
+          const pointsList = dayItem.getElement().querySelector(`.trip-events__list`);
+          const pointController = new PointController(pointsList, onDataChange, onViewChange);
+          pointController.render(filterPoint, data, `default`);
+          showedPointControllers.push(pointController);
+        });
+
+      render(pointsContainer, dayItem, RenderPosition.BEFOREEND);
+    });
+
+    return showedPointControllers;
   }
 }
