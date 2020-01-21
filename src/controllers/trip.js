@@ -68,6 +68,8 @@ export default class TripController {
           if (isSuccess) {
             pointController.destroy();
           }
+
+          this._updatePoints();
         })
         .catch(() => pointController.shake());
     } else {
@@ -97,6 +99,9 @@ export default class TripController {
     this._showedPointControllers = renderPoints(this._container, points, this._data, this._onDataChange, this._onViewChange);
 
     this._setHandlers();
+
+    const tripFullPriceElement = tripInfoBlock.querySelector(`.trip-info__cost-value`);
+    tripFullPriceElement.textContent = this._getFullPrice(points);
   }
 
   _setHandlers() {
@@ -155,5 +160,9 @@ export default class TripController {
     }
 
     this.render();
+  }
+
+  _getFullPrice(points) {
+    return points.reduce((price, point) => price + point.price, 0);
   }
 }
