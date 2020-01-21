@@ -26,9 +26,6 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()]).then((val
     const tripControls = new TripControlsTab();
     render(tripControlsBlock, tripControls, RenderPosition.AFTERBEGIN);
 
-    const tripInfoBlock = document.querySelector(`.trip-info`);
-    render(tripInfoBlock, new TripInfo(), RenderPosition.AFTERBEGIN);
-
     const tripList = new TripList();
     render(tripEventsBlock, tripList, RenderPosition.BEFOREEND);
 
@@ -36,6 +33,9 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()]).then((val
     pointsModel.setDestinations(destinations);
     pointsModel.setOffers(offers);
     pointsModel.setPoints(points);
+
+    const tripInfoBlock = document.querySelector(`.trip-info`);
+    render(tripInfoBlock, new TripInfo(pointsModel), RenderPosition.AFTERBEGIN);
 
     const filterController = new FilterController(tripControlsBlock, pointsModel);
     filterController.render();
