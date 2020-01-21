@@ -1,5 +1,17 @@
 import AbstractComponent from "./abstract-components";
-import {controls} from "../mock/controls";
+
+export const controls = {
+  TABLE: {
+    title: `Table`,
+    isActive: `trip-tabs__btn--active`,
+    href: `#`
+  },
+  STATS: {
+    title: `Stats`,
+    isActive: ``,
+    href: `#`
+  }
+};
 
 const createControlsTabTemplate = (control) => (
   `<a class="trip-tabs__btn ${control.isActive}" href=" ${control.href} ">${control.title}</a>`

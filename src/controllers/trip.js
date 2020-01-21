@@ -1,46 +1,56 @@
 import PointController from "./point";
+import PointsComponent from "../components/points";
 import {emptyPoint} from "../mock/event";
 import {hiddenClass} from "../const";
-import {controls} from "../mock/controls";
 import TripInfo from "../components/trip-info";
 import {render, remove, RenderPosition} from "../utils/render";
-import TripControlsTab from "../components/trip-controls";
+import moment from "moment";
+import DayItem from "../components/day-item";
 
 const renderPoints = (pointsContainer, points, data, onDataChange, onViewChange) => {
-  return points.map((point) => {
-    const pointController = new PointController(pointsContainer, onDataChange, onViewChange);
-    pointController.render(point, data, `default`);
+  let showedPointControllers = [];
+  const dates = new Set(points.map((point) => moment(point.calendar.start).format(`YYYY-MM-DD`)));
 
-    return pointController;
+  Array.from(dates).forEach((date, index) => {
+    const dayItem = new DayItem(date, index + 1);
+
+    points.filter((point) => moment(point.calendar.start).format(`YYYY-MM-DD`) === date)
+      .forEach((filterPoint) => {
+        const pointsList = dayItem.getElement().querySelector(`.trip-events__list`);
+        const pointController = new PointController(pointsList, onDataChange, onViewChange);
+        pointController.render(filterPoint, data, `default`);
+        showedPointControllers.push(pointController);
+      });
+
+    render(pointsContainer, dayItem, RenderPosition.BEFOREEND);
   });
+
+  return showedPointControllers;
 };
 
 const tripInfoBlock = document.querySelector(`.trip-info`);
-const tripControlsBlock = document.querySelector(`.trip-controls`);
 
 export default class TripController {
-  constructor(container, rootElement, pointsModel, statsComponent, api) {
+  constructor(container, pointsModel, api) {
     this._container = container;
     this._showedPointControllers = [];
-    this._rootElement = rootElement;
     this._pointsModel = pointsModel;
-    this._statsComponent = statsComponent;
     this._api = api;
     this._creatingPoint = null;
     this._tripInfoComponent = null;
-    this._tripControlsComponent = null;
+    this._pointsContainerComponent = new PointsComponent();
 
     this._data = {
       destinations: pointsModel.getDestinations(),
       offers: pointsModel.getOffers()
     };
 
-    this._onControlTabsClick = this._onControlTabsClick.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
 
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
+    render(this._container, this._pointsContainerComponent, RenderPosition.BEFOREEND);
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -92,33 +102,12 @@ export default class TripController {
   render() {
     const points = this._pointsModel.getPoints();
     this._tripInfoComponent = new TripInfo(points);
-    this._tripControlsComponent = new TripControlsTab();
 
     render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
-    render(tripControlsBlock, this._tripControlsComponent, RenderPosition.AFTERBEGIN);
-    this._showedPointControllers = renderPoints(this._container, points, this._data, this._onDataChange, this._onViewChange);
-
-    this._setHandlers();
+    this._showedPointControllers = renderPoints(this._pointsContainerComponent.getElement(), points, this._data, this._onDataChange, this._onViewChange);
 
     const tripFullPriceElement = tripInfoBlock.querySelector(`.trip-info__cost-value`);
     tripFullPriceElement.textContent = this._getFullPrice(points);
-  }
-
-  _setHandlers() {
-    this._tripControlsComponent.setClickHandler(this._onControlTabsClick);
-  }
-
-  _onControlTabsClick(type) {
-    switch (type) {
-      case controls.STATS.title:
-        this._hide();
-        this._statsComponent.show();
-        break;
-      case controls.TABLE.title:
-        this._show();
-        this._statsComponent.hide();
-        break;
-    }
   }
 
   _removePoints() {
@@ -140,12 +129,12 @@ export default class TripController {
     this._creatingPoint.render(emptyPoint, this._data, `adding`);
   }
 
-  _show() {
-    this._rootElement.classList.remove(hiddenClass);
+  show() {
+    this._container.classList.remove(hiddenClass);
   }
 
-  _hide() {
-    this._rootElement.classList.add(hiddenClass);
+  hide() {
+    this._container.classList.add(hiddenClass);
   }
 
   _updatePoints() {
@@ -153,10 +142,6 @@ export default class TripController {
 
     if (this._tripInfoComponent) {
       remove(this._tripInfoComponent);
-    }
-
-    if (this._tripControlsComponent) {
-      remove(this._tripControlsComponent);
     }
 
     this.render();
