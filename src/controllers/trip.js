@@ -111,13 +111,14 @@ export default class TripController {
   }
 
   _removePoints() {
+    this._pointsContainerComponent.getElement().innerHTML = ``;
     this._showedPointControllers.forEach((pointController) => pointController.destroy());
     this._showedPointControllers = [];
   }
 
   _onFilterChange() {
     this._removePoints();
-    this._showedPointControllers = renderPoints(this._container, this._pointsModel.getPoints(), this._data, this._onDataChange, this._onViewChange);
+    this._showedPointControllers = renderPoints(this._pointsContainerComponent.getElement(), this._pointsModel.getPoints(), this._data, this._onDataChange, this._onViewChange);
   }
 
   createPoint() {
