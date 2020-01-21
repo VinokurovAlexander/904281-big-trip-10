@@ -1,4 +1,3 @@
-import TripInfo from "./components/trip-info";
 import TripList from "./components/trip-list";
 import NoEvents from "./components/no-events";
 import TripController from "./controllers/trip";
@@ -6,7 +5,6 @@ import {render, RenderPosition} from "./utils/render";
 import PointsModel from "./models/points";
 import FilterController from "./controllers/filter";
 import Stats from "./components/stats";
-import TripControlsTab from "./components/trip-controls";
 import Api from "./api";
 
 const AUTHORIZATION = `Basic sf4SoFEdfYde`;
@@ -23,8 +21,6 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()]).then((val
     render(tripEventsBlock, noEventsComponent, RenderPosition.BEFOREEND);
   } else {
     const tripControlsBlock = document.querySelector(`.trip-controls`);
-    const tripControls = new TripControlsTab();
-    render(tripControlsBlock, tripControls, RenderPosition.AFTERBEGIN);
 
     const tripList = new TripList();
     render(tripEventsBlock, tripList, RenderPosition.BEFOREEND);
@@ -33,9 +29,6 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()]).then((val
     pointsModel.setDestinations(destinations);
     pointsModel.setOffers(offers);
     pointsModel.setPoints(points);
-
-    const tripInfoBlock = document.querySelector(`.trip-info`);
-    render(tripInfoBlock, new TripInfo(pointsModel), RenderPosition.AFTERBEGIN);
 
     const filterController = new FilterController(tripControlsBlock, pointsModel);
     filterController.render();
@@ -46,7 +39,7 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()]).then((val
     statsComponent.hide();
 
     const eventList = tripList.getElement().querySelector(`.trip-events__list`);
-    const tripController = new TripController(eventList, tripEventsBlock, pointsModel, tripControls, statsComponent, api);
+    const tripController = new TripController(eventList, tripEventsBlock, pointsModel, statsComponent, api);
     tripController.render();
 
     document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {

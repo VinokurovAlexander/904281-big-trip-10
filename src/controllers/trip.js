@@ -2,6 +2,9 @@ import PointController from "./point";
 import {emptyPoint} from "../mock/event";
 import {hiddenClass} from "../const";
 import {controls} from "../mock/controls";
+import TripInfo from "../components/trip-info";
+import {render, remove, RenderPosition} from "../utils/render";
+import TripControlsTab from "../components/trip-controls";
 
 const renderPoints = (pointsContainer, points, data, onDataChange, onViewChange) => {
   return points.map((point) => {
@@ -12,16 +15,20 @@ const renderPoints = (pointsContainer, points, data, onDataChange, onViewChange)
   });
 };
 
+const tripInfoBlock = document.querySelector(`.trip-info`);
+const tripControlsBlock = document.querySelector(`.trip-controls`);
+
 export default class TripController {
-  constructor(container, rootElement, pointsModel, tripControls, statsComponent, api) {
+  constructor(container, rootElement, pointsModel, statsComponent, api) {
     this._container = container;
     this._showedPointControllers = [];
     this._rootElement = rootElement;
     this._pointsModel = pointsModel;
-    this._tripControls = tripControls;
     this._statsComponent = statsComponent;
     this._api = api;
     this._creatingPoint = null;
+    this._tripInfoComponent = null;
+    this._tripControlsComponent = null;
 
     this._data = {
       destinations: pointsModel.getDestinations(),
@@ -82,14 +89,18 @@ export default class TripController {
 
   render() {
     const points = this._pointsModel.getPoints();
+    this._tripInfoComponent = new TripInfo(points);
+    this._tripControlsComponent = new TripControlsTab();
 
+    render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
+    render(tripControlsBlock, this._tripControlsComponent, RenderPosition.AFTERBEGIN);
     this._showedPointControllers = renderPoints(this._container, points, this._data, this._onDataChange, this._onViewChange);
 
     this._setHandlers();
   }
 
   _setHandlers() {
-    this._tripControls.setClickHandler(this._onControlTabsClick);
+    this._tripControlsComponent.setClickHandler(this._onControlTabsClick);
   }
 
   _onControlTabsClick(type) {
@@ -134,6 +145,15 @@ export default class TripController {
 
   _updatePoints() {
     this._removePoints();
+
+    if (this._tripInfoComponent) {
+      remove(this._tripInfoComponent);
+    }
+
+    if (this._tripControlsComponent) {
+      remove(this._tripControlsComponent);
+    }
+
     this.render();
   }
 }

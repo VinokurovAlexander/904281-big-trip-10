@@ -2,10 +2,10 @@ import AbstractComponent from "./abstract-components";
 import moment from "moment";
 
 export default class TripInfo extends AbstractComponent {
-  constructor(model) {
+  constructor(points) {
     super();
 
-    this._model = model;
+    this._points = points;
   }
 
   getTemplate() {
@@ -13,13 +13,12 @@ export default class TripInfo extends AbstractComponent {
   }
 
   _getData() {
-    const points = this._model.getPoints();
     const data = {
       title: ``,
       date: ``
     };
 
-    points.forEach((point, index, array) => {
+    this._points.forEach((point, index, array) => {
       if (array.length <= 3) {
         if (index === array.length - 1) {
           data.title += `${point.destination}`;
@@ -29,7 +28,7 @@ export default class TripInfo extends AbstractComponent {
       } else {
         if (index === 0) {
           data.title += `${point.destination} - ... - `;
-        } else if (index === points.length - 1) {
+        } else if (index === array.length - 1) {
           data.title += `${point.destination}`;
         }
       }
