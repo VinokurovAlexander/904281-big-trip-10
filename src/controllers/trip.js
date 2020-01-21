@@ -6,6 +6,7 @@ import TripInfo from "../components/trip-info";
 import {render, remove, RenderPosition} from "../utils/render";
 import moment from "moment";
 import DayItem from "../components/day-item";
+import NoEvents from "../components/no-events";
 
 const renderPoints = (pointsContainer, points, data, onDataChange, onViewChange) => {
   let showedPointControllers = [];
@@ -101,13 +102,19 @@ export default class TripController {
 
   render() {
     const points = this._pointsModel.getPoints();
-    this._tripInfoComponent = new TripInfo(points);
 
-    render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
-    this._showedPointControllers = renderPoints(this._pointsContainerComponent.getElement(), points, this._data, this._onDataChange, this._onViewChange);
+    if (points.length === 0) {
+      const noEventsComponent = new NoEvents();
+      render(this._container, noEventsComponent, RenderPosition.BEFOREEND);
+    } else {
+      this._tripInfoComponent = new TripInfo(points);
 
-    const tripFullPriceElement = tripInfoBlock.querySelector(`.trip-info__cost-value`);
-    tripFullPriceElement.textContent = this._getFullPrice(points);
+      render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
+      this._showedPointControllers = renderPoints(this._pointsContainerComponent.getElement(), points, this._data, this._onDataChange, this._onViewChange);
+
+      const tripFullPriceElement = tripInfoBlock.querySelector(`.trip-info__cost-value`);
+      tripFullPriceElement.textContent = this._getFullPrice(points);
+    }
   }
 
   _removePoints() {
