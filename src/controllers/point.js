@@ -103,6 +103,10 @@ export default class PointController {
       this._onDataChange(this, point, null);
     });
 
+    this._pointEditComponent.setRollupBtnClickHandler(() => {
+      this._replaceEditToPoint();
+    });
+
     switch (mode) {
       case Mode.DEFAULT:
         if (oldPointComponent && oldPointEditComponent) {

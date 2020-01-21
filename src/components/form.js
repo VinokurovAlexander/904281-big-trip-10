@@ -36,6 +36,7 @@ export default class Form extends AbstractSmartComponent {
     this._submitHandler = null;
     this._favoriteClickHandler = null;
     this._deleteBtnClickHandler = null;
+    this._rollupBtnClickHanlder = null;
 
     this._flatpickr = {
       start: null,
@@ -192,6 +193,11 @@ export default class Form extends AbstractSmartComponent {
     this._deleteBtnClickHandler = handler;
   }
 
+  setRollupBtnClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
+    this._rollupBtnClickHanlder = handler;
+  }
+
   _subscribeOnEvents() {
     const element = this.getElement();
 
@@ -249,6 +255,7 @@ export default class Form extends AbstractSmartComponent {
     this.setSubmitHandler(this._submitHandler);
     this.setFavoriteBtnClickHandler(this._favoriteClickHandler);
     this.setDeleteBtnClickHandler(this._deleteBtnClickHandler);
+    this.setRollupBtnClickHandler(this._rollupBtnClickHanlder);
     this._subscribeOnEvents();
   }
 
