@@ -1,5 +1,19 @@
 import AbstractComponent from "./abstract-components";
-import {sortItems} from "../mock/sort";
+
+const sortItems = {
+  EVENT: {
+    value: `Event`,
+    isChecked: `checked`
+  },
+  TIME: {
+    value: `Time`,
+    isChecked: ``,
+  },
+  PRICE: {
+    value: `Price`,
+    isChecked: ``,
+  },
+};
 
 const createTripSortItemTemplate = (sortItem) => (
   `<div class="trip-sort__item  trip-sort__item--${sortItem.value.toLowerCase()}">
@@ -14,7 +28,7 @@ const createTripSortItemTemplate = (sortItem) => (
 );
 
 const createTripSortListTemplate = () => {
-  const tripSortItems = sortItems.map((sortItem) => createTripSortItemTemplate(sortItem)).join(`\n`);
+  const tripSortItems = Object.values(sortItems).map((sortItem) => createTripSortItemTemplate(sortItem)).join(`\n`);
 
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -36,7 +50,7 @@ export default class Sort extends AbstractComponent {
     return createTripSortListTemplate();
   }
 
-  setSortHandler(handler) {
+  setChangeSortHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       if (evt.target.tagName === `LABEL`) {
         const sortType = evt.target.dataset.sort;

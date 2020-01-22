@@ -1,4 +1,4 @@
-import Event from "../components/event";
+import PointComponent from "../components/point";
 import Form from "../components/form";
 import {render, RenderPosition, replace, remove} from "../utils/render";
 import {isEscEvent} from "../utils/esc-key";
@@ -64,7 +64,7 @@ export default class PointController {
     const oldPointEditComponent = this._pointEditComponent;
     this._mode = mode;
 
-    this._pointComponent = new Event(point);
+    this._pointComponent = new PointComponent(point);
     this._pointEditComponent = new Form(point, data.destinations, data.offers);
 
     this._pointComponent.setOpenFormHandler(() => {
@@ -101,6 +101,10 @@ export default class PointController {
       });
       this._pointEditComponent.disableButtons(true);
       this._onDataChange(this, point, null);
+    });
+
+    this._pointEditComponent.setRollupBtnClickHandler(() => {
+      this._replaceEditToPoint();
     });
 
     switch (mode) {

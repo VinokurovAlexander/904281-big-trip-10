@@ -1,13 +1,11 @@
-import TripInfo from "./components/trip-info";
-import TripList from "./components/trip-list";
-import NoEvents from "./components/no-events";
 import TripController from "./controllers/trip";
 import {render, RenderPosition} from "./utils/render";
 import PointsModel from "./models/points";
 import FilterController from "./controllers/filter";
 import Stats from "./components/stats";
-import TripControlsTab from "./components/trip-controls";
 import Api from "./api";
+import TripControlsTab from "./components/trip-controls";
+import {controls} from "./components/trip-controls";
 
 const AUTHORIZATION = `Basic sf4SoFEdfYde`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
@@ -18,41 +16,41 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()]).then((val
   const [points, destinations, offers] = values;
   const tripEventsBlock = document.querySelector(`.trip-events`);
 
-  if (points.length === 0) {
-    const noEventsComponent = new NoEvents();
-    render(tripEventsBlock, noEventsComponent, RenderPosition.BEFOREEND);
-  } else {
-    const tripControlsBlock = document.querySelector(`.trip-controls`);
-    const tripControls = new TripControlsTab();
-    render(tripControlsBlock, tripControls, RenderPosition.AFTERBEGIN);
+  const pointsModel = new PointsModel();
+  pointsModel.setDestinations(destinations);
+  pointsModel.setOffers(offers);
+  pointsModel.setPoints(points);
 
-    const tripInfoBlock = document.querySelector(`.trip-info`);
-    render(tripInfoBlock, new TripInfo(), RenderPosition.AFTERBEGIN);
+  const tripControlsBlock = document.querySelector(`.trip-controls`);
+  const filterController = new FilterController(tripControlsBlock, pointsModel);
+  filterController.render();
 
-    const tripList = new TripList();
-    render(tripEventsBlock, tripList, RenderPosition.BEFOREEND);
+  const pageBodyContainer = document.querySelector(`.page-main .page-body__container`);
+  const statsComponent = new Stats(pointsModel);
+  render(pageBodyContainer, statsComponent, RenderPosition.BEFOREEND);
+  statsComponent.hide();
 
-    const pointsModel = new PointsModel();
-    pointsModel.setDestinations(destinations);
-    pointsModel.setOffers(offers);
-    pointsModel.setPoints(points);
+  const tripController = new TripController(tripEventsBlock, pointsModel, api);
+  tripController.render();
 
-    const filterController = new FilterController(tripControlsBlock, pointsModel);
-    filterController.render();
+  document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
+    tripController.createPoint();
+  });
 
-    const pageBodyContainer = document.querySelector(`.page-main .page-body__container`);
-    const statsComponent = new Stats(pointsModel);
-    render(pageBodyContainer, statsComponent, RenderPosition.BEFOREEND);
-    statsComponent.hide();
-
-    const eventList = tripList.getElement().querySelector(`.trip-events__list`);
-    const tripController = new TripController(eventList, tripEventsBlock, pointsModel, tripControls, statsComponent, api);
-    tripController.render();
-
-    document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
-      tripController.createPoint();
-    });
-  }
+  const tripControls = new TripControlsTab();
+  render(tripControlsBlock, tripControls, RenderPosition.AFTERBEGIN);
+  tripControls.setClickHandler((type) => {
+    switch (type) {
+      case controls.STATS.title:
+        tripController.hide();
+        statsComponent.show();
+        break;
+      case controls.TABLE.title:
+        tripController.show();
+        statsComponent.hide();
+        break;
+    }
+  });
 });
 
 
