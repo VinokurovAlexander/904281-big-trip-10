@@ -34,15 +34,24 @@ const fetchHandler = (evt) => {
   const {request} = evt;
 
   evt.respondWith(
-    caches.match(request)
-      .then((cashResponse) => {
-        if (cashResponse) {
-          return cashResponse;
+    caches.match(request).then((cacheResponse) => {
+      if (cacheResponse) {
+        return cacheResponse;
+      }
+      return fetch(request).then((response) => {
+        if (!response || response.status !== 200) {
+          return response;
         }
 
-        return fetch(request)
-          .then((response) => response);
-      })
+        const clonedResponse = response.clone();
+
+        caches
+          .open(CACHE_NAME)
+          .then((cache) => cache.put(request, clonedResponse));
+
+        return response;
+      });
+    })
   );
 };
 
