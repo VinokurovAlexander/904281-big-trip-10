@@ -6,7 +6,7 @@ import TripInfo from "../components/trip-info";
 import {render, remove, RenderPosition} from "../utils/render";
 import moment from "moment";
 import DayItem from "../components/day-item";
-import NoEvents from "../components/no-events";
+import NoPoints from "../components/no-points";
 import Sort from "../components/sort";
 
 const tripInfoBlock = document.querySelector(`.trip-info`);
@@ -22,6 +22,7 @@ export default class TripController {
     this._sortComponent = null;
     this._pointsContainerComponent = new PointsComponent();
     this._isDefaultSort = true;
+    this._noPointsComponent = null;
 
     this._data = {
       destinations: pointsModel.getDestinations(),
@@ -88,8 +89,8 @@ export default class TripController {
     render(this._container, this._sortComponent, RenderPosition.AFTERBEGIN);
 
     if (points.length === 0) {
-      const noEventsComponent = new NoEvents();
-      render(this._container, noEventsComponent, RenderPosition.BEFOREEND);
+      this._noPointsComponent = new NoPoints();
+      render(this._container, this._noPointsComponent, RenderPosition.BEFOREEND);
     } else {
       this._tripInfoComponent = new TripInfo(points);
 
@@ -156,6 +157,14 @@ export default class TripController {
 
     if (this._tripInfoComponent) {
       remove(this._tripInfoComponent);
+    }
+
+    if (this._sortComponent) {
+      remove(this._sortComponent);
+    }
+
+    if (this._noPointsComponent) {
+      remove(this._noPointsComponent);
     }
 
     this.render();

@@ -1,6 +1,8 @@
 import AbstractComponent from "./abstract-components";
 import moment from "moment";
 
+const DESTINATIONS_VIEW_LIMIT = 3;
+
 export default class TripInfo extends AbstractComponent {
   constructor(points) {
     super();
@@ -18,32 +20,15 @@ export default class TripInfo extends AbstractComponent {
       date: ``
     };
 
-    this._points.forEach((point, index, array) => {
-      if (array.length <= 3) {
-        if (index === array.length - 1) {
-          data.title += `${point.destination}`;
-        } else {
-          data.title += `${point.destination} - `;
-        }
-      } else {
-        if (index === 0) {
-          data.title += `${point.destination} - ... - `;
-        } else if (index === array.length - 1) {
-          data.title += `${point.destination}`;
-        }
-      }
+    const lastIndex = this._points.length - 1;
 
-      if (array.length === 1) {
-        data.date = `${moment(point.calendar.start).format(`D MMM`)} - 
-        ${moment(point.calendar.end).format(`D MMM`)}`;
-      } else {
-        if (index === 0) {
-          data.date = `${moment(point.calendar.start).format(`D MMM`)} - `;
-        } else if (index === array.length - 1) {
-          data.date += `${moment(point.calendar.end).format(`D MMM`)}`;
-        }
-      }
-    });
+    data.title = `${this._points[0].destination} 
+    ${this._points.length > (DESTINATIONS_VIEW_LIMIT - 1) ? `&mdash; ... &mdash;` : `&mdash;`} 
+    ${this._points[lastIndex].destination}`;
+
+    data.date = `${moment(this._points[0].calendar.start).format(`D MMM`)} - 
+    ${moment(this._points[lastIndex].calendar.start).format(`D MMM`)}`;
+
     return data;
   }
 
