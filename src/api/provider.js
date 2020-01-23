@@ -99,7 +99,6 @@ export default class Provider {
   }
 
   deletePoint(id) {
-    debugger
     if (this._isOnline()) {
       return this._api.deletePoint(id)
         .then(() => this._storage.deletePoint(id));
