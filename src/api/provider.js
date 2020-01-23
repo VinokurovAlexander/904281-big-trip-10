@@ -84,13 +84,14 @@ export default class Provider {
     if (this._isOnline()) {
       return this._api.updatePoint(id, data)
         .then((newPoint) => {
-          this._storage.setItem(`points`, newPoint.toRAW());
+          this._storage.setItem(`points`, [...this._storage.getAll().points, newPoint.toRAW()]);
 
           return newPoint;
         });
     }
 
     const offlineUpdatePoint = Point.parsePoint(Object.assign({}, data.toRAW(), {offline: true}));
+    this._storage.setItem(`points`, [...this._storage.getAll().points, offlineUpdatePoint.toRAW()]);
 
     this._isSynchronized = false;
 
