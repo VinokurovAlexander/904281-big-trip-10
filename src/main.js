@@ -9,7 +9,7 @@ import Store from "./api/store";
 import Provider from "./api/provider";
 import {controls} from "./components/trip-controls";
 
-const AUTHORIZATION = `Basic sf4SoXEdfYde`;
+const AUTHORIZATION = `Basic sf4SoYEdfYde`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;
