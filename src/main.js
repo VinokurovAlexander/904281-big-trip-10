@@ -9,7 +9,7 @@ import Store from "./api/store";
 import Provider from "./api/provider";
 import {controls} from "./components/trip-controls";
 
-const AUTHORIZATION = `Basic sf4SoYEdfYde`;
+const AUTHORIZATION = `Basic af4SoYEdfYde`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;
@@ -72,8 +72,9 @@ window.addEventListener(`online`, () => {
 
   if (!apiWithProvider.getSynchronize()) {
     apiWithProvider.sync()
-      .then(() => {})
-      .catch(() => {});
+      .catch((err) =>{
+        throw new Error(err);
+      });
   }
 });
 

@@ -18,11 +18,12 @@ export default class Store {
     this._storage.setItem(this._storeKey, JSON.stringify(Object.assign({}, store, {[key]: value})));
   }
 
-  deletePoint(key) {
+  deletePoint(id) {
+    const store = this.getAll();
     const storePoints = this.getAll().points;
 
-    delete storePoints[key];
+    const filterPoints = storePoints.filter((point) => point.id !== id);
 
-    this._storage.setItem(this._storeKey, JSON.stringify(Object.assign({}, storePoints)));
+    this._storage.setItem(this._storeKey, JSON.stringify(Object.assign({}, store, {'points': filterPoints})));
   }
 }

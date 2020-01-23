@@ -14,7 +14,8 @@ export default class Provider {
     if (this._isOnline()) {
       return this._api.addPoint(data)
         .then((newPoint) => {
-          this._storage.setItem(`points`, newPoint.toRAW());
+          this._storage.setItem(`points`, [...this._storage.getAll().points, newPoint.toRAW()]);
+
           return newPoint;
         });
     }
@@ -22,8 +23,7 @@ export default class Provider {
     const offlineNewPointId = nanoid();
     const offlineNewPoint = Point.parsePoint(Object.assign({}, data.toRAW(), {id: offlineNewPointId}));
 
-    this._storage.setItem(`points`, Object.assign({}, offlineNewPoint.toRAW(), {offline: true}));
-
+    this._storage.setItem(`points`, [...this._storage.getAll().points, offlineNewPoint.toRAW()]);
     this._isSynchronized = false;
 
     return Promise.resolve(offlineNewPoint);
@@ -43,7 +43,6 @@ export default class Provider {
     const storePoints = this._storage.getAll().points;
 
     this._isSynchronized = false;
-
     return Promise.resolve(Point.parsePoints(storePoints));
   }
 
