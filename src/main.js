@@ -44,7 +44,7 @@ Promise.all([apiWithProvider.getPoints(), apiWithProvider.getDestinations(), api
     render(pageBodyContainer, statsComponent, RenderPosition.BEFOREEND);
     statsComponent.hide();
 
-    const tripController = new TripController(tripEventsBlock, pointsModel, api);
+    const tripController = new TripController(tripEventsBlock, pointsModel, apiWithProvider);
     tripController.render();
 
     document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {

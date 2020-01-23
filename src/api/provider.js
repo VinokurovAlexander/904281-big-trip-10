@@ -91,11 +91,11 @@ export default class Provider {
         });
     }
 
-    const fakeUpdatePoint = Point.parsePoint(Object.assign({}, data.toRAW(), {offline: true}));
+    const offlineUpdatePoint = Point.parsePoint(Object.assign({}, data.toRAW(), {offline: true}));
 
     this._isSynchronized = false;
 
-    return Promise.resolve(fakeUpdatePoint);
+    return Promise.resolve(offlineUpdatePoint);
   }
 
   deletePoint(id) {
@@ -121,7 +121,7 @@ export default class Provider {
 
   sync() {
     if (this._isOnline()) {
-      const storePoints = Object.values(this._storage.getAll());
+      const storePoints = this._storage.getAll().points;
 
       return this._api.sync(storePoints)
         .then((response) => {

@@ -39,15 +39,13 @@ const fetchHandler = (evt) => {
         return cacheResponse;
       }
       return fetch(request).then((response) => {
-        if (!response || response.status !== 200) {
+        if (!response || response.status !== 200 || response.type !== `basic`) {
           return response;
         }
 
         const clonedResponse = response.clone();
 
-        caches
-          .open(CACHE_NAME)
-          .then((cache) => cache.put(request, clonedResponse));
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
 
         return response;
       });
