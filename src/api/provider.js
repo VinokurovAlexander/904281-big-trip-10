@@ -99,6 +99,7 @@ export default class Provider {
   }
 
   deletePoint(id) {
+    debugger
     if (this._isOnline()) {
       return this._api.deletePoint(id)
         .then(() => this._storage.deletePoint(id));
@@ -131,7 +132,7 @@ export default class Provider {
           const createdPoints = getSyncedPoints(response.created);
           const updatedPoints = getSyncedPoints(response.updated);
 
-          [...createdPoints, ...updatedPoints].forEach((point) => this._storage.setItem(`points`, point));
+          this._storage.setItem(`points`, [...createdPoints, ...updatedPoints]);
 
           this._isSynchronized = true;
 
