@@ -85,14 +85,15 @@ export default class TripController {
 
   render() {
     const points = this._pointsModel.getPoints();
-    this._sortComponent = new Sort();
-    render(this._container, this._sortComponent, RenderPosition.AFTERBEGIN);
 
     if (points.length === 0) {
       this._noPointsComponent = new NoPoints();
       render(this._container, this._noPointsComponent, RenderPosition.BEFOREEND);
     } else {
       this._tripInfoComponent = new TripInfo(points);
+
+      this._sortComponent = new Sort();
+      render(this._container, this._sortComponent, RenderPosition.AFTERBEGIN);
 
       render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
       this._showedPointControllers = this._renderPoints(this._pointsContainerComponent.getElement(), points, this._data, this._onDataChange, this._onViewChange);
