@@ -6,6 +6,7 @@ import AbstractSmartComponent from "./abstract-smart-component";
 import {pointTypes} from "../mock/event";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
+import {debounce} from "../utils/debounce";
 
 const DefaultData = {
   deleteBtnText: `Delete`,
@@ -34,9 +35,13 @@ export default class Form extends AbstractSmartComponent {
     this.id = event.id;
 
     this._submitHandler = null;
-    this._favoriteClickHandler = null;
     this._deleteBtnClickHandler = null;
     this._rollupBtnClickHanlder = null;
+
+    this._favoriteBtnClickHandler = this._favoriteBtnClickHandler.bind(this);
+    this._dateChangeHandler = this._dateChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
 
     this._flatpickr = {
       start: null,
@@ -183,11 +188,6 @@ export default class Form extends AbstractSmartComponent {
     this._submitHandler = handler;
   }
 
-  setFavoriteBtnClickHandler(handler) {
-    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, handler);
-    this._favoriteClickHandler = handler;
-  }
-
   setDeleteBtnClickHandler(handler) {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, handler);
     this._deleteBtnClickHandler = handler;
@@ -201,59 +201,72 @@ export default class Form extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const element = this.getElement();
 
-    element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
-      if (evt.target.tagName === `INPUT`) {
-        const eventType = evt.target.value;
-        this._eventTypeName = `${eventType}`;
-        this.allOffers.forEach((offer) => {
-          if (offer.type === eventType) {
-            this._eventOffers = offer.offers;
-          }
-        });
+    element.querySelector(`.event__type-list`).addEventListener(`click`, this._eventTypeChangeHandler);
 
-        this.rerender();
-      }
-    });
-
-    element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
-      const currentCity = evt.target.value;
-
-      this.destinations.map((city) => {
-        if (currentCity === city.name) {
-          this._eventDescription = city.description;
-          this._eventDestination = city.name;
-
-          evt.target.setCustomValidity(``);
-          this.rerender();
-        } else {
-          evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
-        }
-      });
-    });
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
 
     Array.from(element.querySelectorAll(`.event__input--time`)).map((dateElement) => {
-      dateElement.addEventListener(`change`, (evt) => {
-        const currentStartDate = new Date(this._flatpickr.start.input.value);
-        const currentEndDate = new Date(this._flatpickr.end.input.value);
-        if ((moment(currentEndDate).isBefore(moment(currentStartDate)))) {
-          evt.target.nextSibling.setCustomValidity(`Дата окончания не может быть меньше даты начала события`);
-        } else {
-          evt.target.nextSibling.setCustomValidity(``);
-          this._eventStart = currentStartDate;
-          this._eventEnd = currentEndDate;
-          this.rerender();
-        }
-      });
+      dateElement.addEventListener(`change`, this._dateChangeHandler);
     });
 
     element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
       this._eventPrice = evt.target.value;
     });
+
+    element.querySelector(`.event__favorite-btn`).addEventListener(`click`, debounce(this._favoriteBtnClickHandler));
+  }
+
+  _favoriteBtnClickHandler() {
+    this._eventIsFavorite = !this._eventIsFavorite;
+
+    this.rerender();
+  }
+
+  _dateChangeHandler(evt) {
+    const currentStartDate = new Date(this._flatpickr.start.input.value);
+    const currentEndDate = new Date(this._flatpickr.end.input.value);
+    if ((moment(currentEndDate).isBefore(moment(currentStartDate)))) {
+      evt.target.nextSibling.setCustomValidity(`Дата окончания не может быть меньше даты начала события`);
+    } else {
+      evt.target.nextSibling.setCustomValidity(``);
+      this._eventStart = currentStartDate;
+      this._eventEnd = currentEndDate;
+      this.rerender();
+    }
+  }
+
+  _destinationChangeHandler(evt) {
+    const currentCity = evt.target.value;
+
+    this.destinations.map((city) => {
+      if (currentCity === city.name) {
+        this._eventDescription = city.description;
+        this._eventDestination = city.name;
+
+        evt.target.setCustomValidity(``);
+        this.rerender();
+      } else {
+        evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
+      }
+    });
+  }
+
+  _eventTypeChangeHandler(evt) {
+    if (evt.target.tagName === `INPUT`) {
+      const eventType = evt.target.value;
+      this._eventTypeName = `${eventType}`;
+      this.allOffers.forEach((offer) => {
+        if (offer.type === eventType) {
+          this._eventOffers = offer.offers;
+        }
+      });
+
+      this.rerender();
+    }
   }
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
-    this.setFavoriteBtnClickHandler(this._favoriteClickHandler);
     this.setDeleteBtnClickHandler(this._deleteBtnClickHandler);
     this.setRollupBtnClickHandler(this._rollupBtnClickHanlder);
     this._subscribeOnEvents();

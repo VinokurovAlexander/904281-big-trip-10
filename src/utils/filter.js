@@ -1,4 +1,4 @@
-import {filtersType} from "../mock/filters";
+import {filtersType} from "../components/filter";
 import moment from "moment";
 
 const getPointsByTime = (points, time) => {

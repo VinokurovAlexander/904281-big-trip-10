@@ -88,13 +88,6 @@ export default class PointController {
       this._onDataChange(this, oldData, newData);
     });
 
-    this._pointEditComponent.setFavoriteBtnClickHandler(() => {
-      const newPoint = Point.clone(point);
-      newPoint.isFavorite = !newPoint.isFavorite;
-
-      this._onDataChange(this, point, newPoint);
-    });
-
     this._pointEditComponent.setDeleteBtnClickHandler(() => {
       this._pointEditComponent.setData({
         deleteBtnText: `Deleting...`

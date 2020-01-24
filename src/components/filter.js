@@ -1,15 +1,29 @@
 import AbstractComponent from "./abstract-components";
-import {filtersType} from "../mock/filters";
 
-const createTripFilterTemplate = (filter) => (
+export const filtersType = {
+  ALL: {
+    value: `All`,
+    checked: `checked`
+  },
+  FUTURE: {
+    value: `Future`,
+    checked: ``
+  },
+  PAST: {
+    value: `Past`,
+    checked: ``
+  },
+};
+
+const createTripFilterTemplate = (filter, index) => (
   `<div class="trip-filters__filter">
-      <input id="filter-${filter.value.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter.value.toLowerCase()}" ${filter.checked}>
-      <label class="trip-filters__filter-label" for="filter-${filter.value}" data-filter="${filter.value}">${filter.value}</label>
+      <input id="filter-${index}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter.value.toLowerCase()}" ${filter.checked}>
+      <label class="trip-filters__filter-label" for="filter-${index}" data-filter="${filter.value}">${filter.value}</label>
     </div>`
 );
 
 const createTripFiltersListTemplate = () => {
-  const filtersItems = Object.values(filtersType).map((filter) => createTripFilterTemplate(filter)).join(`\n`);
+  const filtersItems = Object.values(filtersType).map((filter, index) => createTripFilterTemplate(filter, index)).join(`\n`);
 
   return (
     `<form class="trip-filters" action="#" method="get">

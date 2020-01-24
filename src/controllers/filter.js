@@ -1,5 +1,5 @@
 import {render, RenderPosition} from "../utils/render";
-import {filtersType} from "../mock/filters";
+import {filtersType} from "../components/filter";
 import FilterComponent from "../components/filter";
 
 export default class FilterController {

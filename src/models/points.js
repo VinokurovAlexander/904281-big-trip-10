@@ -1,4 +1,4 @@
-import {filtersType} from "../mock/filters";
+import {filtersType} from "../components/filter";
 import {getPointsByFilter} from "../utils/filter";
 
 export default class PointsModel {
