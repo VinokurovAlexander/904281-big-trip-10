@@ -1,4 +1,4 @@
-import {filtersType} from "../components/filter";
+import {FiltersType} from "../components/filter";
 import {getPointsByFilter} from "../utils/filter";
 
 export default class PointsModel {
@@ -7,7 +7,7 @@ export default class PointsModel {
     this._destinations = [];
     this._offers = [];
 
-    this._activeFilter = filtersType.ALL;
+    this._activeFilter = FiltersType.ALL;
     this._filterChangeHandler = [];
   }
 

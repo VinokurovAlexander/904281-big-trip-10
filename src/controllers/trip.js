@@ -8,7 +8,6 @@ import moment from "moment";
 import DayItem from "../components/day-item";
 import NoPoints from "../components/no-points";
 import Sort from "../components/sort";
-import FilterController from "./filter";
 
 export default class TripController {
   constructor(container, pointsModel, api) {
@@ -93,10 +92,6 @@ export default class TripController {
       this._sortComponent = new Sort();
       render(this._container, this._sortComponent, RenderPosition.AFTERBEGIN);
 
-      const tripControlsBlock = document.querySelector(`.trip-controls`);
-      this._filterController = new FilterController(tripControlsBlock, this._pointsModel);
-      this._filterController.render();
-
       const tripInfoBlock = document.querySelector(`.trip-info`);
       this._tripInfoComponent = new TripInfo(points);
       render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
@@ -137,8 +132,7 @@ export default class TripController {
   }
 
   _onFilterChange() {
-    this._removePoints();
-    this._showedPointControllers = this._renderPoints(this._pointsContainerComponent.getElement(), this._pointsModel.getPoints(), this._data, this._onDataChange, this._onViewChange);
+    this._updatePoints();
   }
 
   createPoint() {

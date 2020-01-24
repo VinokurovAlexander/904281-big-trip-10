@@ -7,6 +7,7 @@ import TripControlsTab from "./components/trip-controls";
 import Store from "./api/store";
 import Provider from "./api/provider";
 import {controls} from "./components/trip-controls";
+import FilterController from "./controllers/filter";
 
 const AUTHORIZATION = `Basic af4SoYEdfYde`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
@@ -34,6 +35,10 @@ Promise.all([apiWithProvider.getPoints(), apiWithProvider.getDestinations(), api
     pointsModel.setOffers(offers);
     pointsModel.setPoints(points);
 
+    const tripControlsBlock = document.querySelector(`.trip-controls`);
+    const filterController = new FilterController(tripControlsBlock, pointsModel);
+    filterController.render();
+
     const pageBodyContainer = document.querySelector(`.page-main .page-body__container`);
     const statsComponent = new Stats(pointsModel);
     render(pageBodyContainer, statsComponent, RenderPosition.BEFOREEND);
@@ -47,7 +52,6 @@ Promise.all([apiWithProvider.getPoints(), apiWithProvider.getDestinations(), api
     });
 
     const tripControls = new TripControlsTab();
-    const tripControlsBlock = document.querySelector(`.trip-controls`);
     render(tripControlsBlock, tripControls, RenderPosition.AFTERBEGIN);
     tripControls.setClickHandler((type) => {
       switch (type) {
