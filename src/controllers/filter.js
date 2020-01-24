@@ -1,4 +1,4 @@
-import {render, RenderPosition} from "../utils/render";
+import {render, RenderPosition, remove} from "../utils/render";
 import {filtersType} from "../components/filter";
 import FilterComponent from "../components/filter";
 
@@ -22,5 +22,9 @@ export default class FilterController {
   _onFilterChange(filter) {
     this._pointModel.setFilter(filter);
     this._activeFilter = filter;
+  }
+
+  destroy() {
+    remove(this._filterComponent);
   }
 }

@@ -8,8 +8,7 @@ import moment from "moment";
 import DayItem from "../components/day-item";
 import NoPoints from "../components/no-points";
 import Sort from "../components/sort";
-
-const tripInfoBlock = document.querySelector(`.trip-info`);
+import FilterController from "./filter";
 
 export default class TripController {
   constructor(container, pointsModel, api) {
@@ -23,6 +22,7 @@ export default class TripController {
     this._pointsContainerComponent = new PointsComponent();
     this._isDefaultSort = true;
     this._noPointsComponent = null;
+    this._filterController = null;
 
     this._data = {
       destinations: pointsModel.getDestinations(),
@@ -90,12 +90,17 @@ export default class TripController {
       this._noPointsComponent = new NoPoints();
       render(this._container, this._noPointsComponent, RenderPosition.BEFOREEND);
     } else {
-      this._tripInfoComponent = new TripInfo(points);
-
       this._sortComponent = new Sort();
       render(this._container, this._sortComponent, RenderPosition.AFTERBEGIN);
 
+      const tripControlsBlock = document.querySelector(`.trip-controls`);
+      this._filterController = new FilterController(tripControlsBlock, this._pointsModel);
+      this._filterController.render();
+
+      const tripInfoBlock = document.querySelector(`.trip-info`);
+      this._tripInfoComponent = new TripInfo(points);
       render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
+
       this._showedPointControllers = this._renderPoints(this._pointsContainerComponent.getElement(), points, this._data, this._onDataChange, this._onViewChange);
 
       this._sortComponent.setChangeSortHandler((sortType) => {
@@ -166,6 +171,10 @@ export default class TripController {
 
     if (this._noPointsComponent) {
       remove(this._noPointsComponent);
+    }
+
+    if (this._filterController) {
+      this._filterController.destroy();
     }
 
     this.render();

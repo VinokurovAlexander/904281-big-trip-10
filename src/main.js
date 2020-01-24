@@ -1,7 +1,6 @@
 import TripController from "./controllers/trip";
 import {render, RenderPosition} from "./utils/render";
 import PointsModel from "./models/points";
-import FilterController from "./controllers/filter";
 import Stats from "./components/stats";
 import Api from "./api";
 import TripControlsTab from "./components/trip-controls";
@@ -35,10 +34,6 @@ Promise.all([apiWithProvider.getPoints(), apiWithProvider.getDestinations(), api
     pointsModel.setOffers(offers);
     pointsModel.setPoints(points);
 
-    const tripControlsBlock = document.querySelector(`.trip-controls`);
-    const filterController = new FilterController(tripControlsBlock, pointsModel);
-    filterController.render();
-
     const pageBodyContainer = document.querySelector(`.page-main .page-body__container`);
     const statsComponent = new Stats(pointsModel);
     render(pageBodyContainer, statsComponent, RenderPosition.BEFOREEND);
@@ -52,6 +47,7 @@ Promise.all([apiWithProvider.getPoints(), apiWithProvider.getDestinations(), api
     });
 
     const tripControls = new TripControlsTab();
+    const tripControlsBlock = document.querySelector(`.trip-controls`);
     render(tripControlsBlock, tripControls, RenderPosition.AFTERBEGIN);
     tripControls.setClickHandler((type) => {
       switch (type) {
