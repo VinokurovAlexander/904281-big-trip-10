@@ -1,6 +1,6 @@
 export const hiddenClass = `visually-hidden`;
 
-export const sortTypes = {
+export const SortTypes = {
   EVENT: `Event`,
   TIME: `Time`,
   PRICE: `Price`

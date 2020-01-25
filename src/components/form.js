@@ -8,7 +8,7 @@ import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
 import {debounce} from "../utils/debounce";
 
-const DefaultData = {
+const defaultData = {
   deleteBtnText: `Delete`,
   submitBtnText: `Save`
 };
@@ -31,7 +31,7 @@ export default class Form extends AbstractSmartComponent {
     this._eventEnd = this._event.calendar.end;
     this._eventPrice = this._event.price;
 
-    this._externalData = DefaultData;
+    this._externalData = defaultData;
 
     this.destinations = destinations;
     this.allOffers = allOffers;
@@ -185,7 +185,7 @@ export default class Form extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return this._createEditPointFormTemplate(DefaultData);
+    return this._createEditPointFormTemplate(defaultData);
   }
 
   setSubmitHandler(handler) {
@@ -327,7 +327,7 @@ export default class Form extends AbstractSmartComponent {
   }
 
   setData(data) {
-    this._externalData = Object.assign({}, DefaultData, data);
+    this._externalData = Object.assign({}, defaultData, data);
     this.rerender();
   }
 

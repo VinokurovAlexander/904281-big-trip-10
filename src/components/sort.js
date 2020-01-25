@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-components";
-import {sortTypes} from "../const";
+import {SortTypes} from "../const";
 
 const createTripSortItemTemplate = (sortType, activeSort, index) => (
   `<div class="trip-sort__item  trip-sort__item--${sortType.toLowerCase()}">
@@ -16,7 +16,7 @@ const createTripSortItemTemplate = (sortType, activeSort, index) => (
 );
 
 const createTripSortListTemplate = (activeSort) => {
-  const tripSortItems = Object.values(sortTypes).map((sortItem, index) => createTripSortItemTemplate(sortItem, activeSort, index)).join(`\n`);
+  const tripSortItems = Object.values(SortTypes).map((sortItem, index) => createTripSortItemTemplate(sortItem, activeSort, index)).join(`\n`);
 
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">

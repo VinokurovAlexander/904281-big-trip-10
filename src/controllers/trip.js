@@ -1,7 +1,7 @@
 import PointController from "./point";
 import PointsComponent from "../components/points";
 import {getEventType} from "../models/point";
-import {hiddenClass, sortTypes} from "../const";
+import {hiddenClass, SortTypes} from "../const";
 import TripInfo from "../components/trip-info";
 import {render, remove, RenderPosition} from "../utils/render";
 import moment from "moment";
@@ -39,7 +39,7 @@ export default class TripController {
     this._pointsContainerComponent = new PointsComponent();
 
     this._isDefaultSort = true;
-    this._activeSort = sortTypes.EVENT;
+    this._activeSort = SortTypes.EVENT;
 
     this._data = {
       destinations: pointsModel.getDestinations(),
@@ -128,20 +128,20 @@ export default class TripController {
     let sortedPoints = [];
 
     switch (sortType) {
-      case sortTypes.EVENT:
+      case SortTypes.EVENT:
         sortedPoints = this._pointsModel.getPoints().sort((a, b) => a.calendar.start - b.calendar.start);
         this._isDefaultSort = true;
-        this._activeSort = sortTypes.EVENT;
+        this._activeSort = SortTypes.EVENT;
         break;
-      case sortTypes.PRICE:
+      case SortTypes.PRICE:
         sortedPoints = this._pointsModel.getPoints().sort((a, b) => b.price - a.price);
         this._isDefaultSort = false;
-        this._activeSort = sortTypes.PRICE;
+        this._activeSort = SortTypes.PRICE;
         break;
-      case sortTypes.TIME:
+      case SortTypes.TIME:
         sortedPoints = this._pointsModel.getPoints().sort((a, b) => b.calendar.end - b.calendar.start - (a.calendar.end - a.calendar.start));
         this._isDefaultSort = false;
-        this._activeSort = sortTypes.TIME;
+        this._activeSort = SortTypes.TIME;
         break;
     }
     this._removePoints();
