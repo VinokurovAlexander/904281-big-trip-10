@@ -144,7 +144,7 @@ export default class TripController {
 
   createPoint() {
     if (this._creatingPoint) {
-      return;
+      this._creatingPoint.destroy();
     }
 
     this._creatingPoint = new PointController(this._container, this._onDataChange, this._onViewChange);
