@@ -3,7 +3,9 @@ import AbstractComponent from "./abstract-components";
 import moment from "moment";
 
 const createPointTemplate = (point) => {
-  const offersItems = point.offers.map((offer) => createEventOfferTemplate(offer)).join(`\n`);
+  const selectedOffers = point.offers
+    .filter((offer) => offer.checked === true)
+    .map((offer) => createEventOfferTemplate(offer)).join(`\n`);
 
   return (
     `<li class="trip-events__item"><div class="event">
@@ -27,7 +29,7 @@ const createPointTemplate = (point) => {
 
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${offersItems}
+          ${selectedOffers}
         </ul>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>

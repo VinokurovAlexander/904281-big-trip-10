@@ -182,7 +182,16 @@ export default class TripController {
   }
 
   _getFullPrice(points) {
-    return points.reduce((price, point) => price + point.price, 0);
+
+    return points.reduce((price, point) => price + this._getPointPrice(point), 0);
+  }
+
+  _getPointPrice(point) {
+    const offersPrice = point.offers
+      .filter((offer) => offer.checked === true)
+      .reduce((price, offer) => price + offer.price, 0);
+
+    return point.price + offersPrice;
   }
 
   _renderPoints(pointsContainer, points, data, onDataChange, onViewChange) {

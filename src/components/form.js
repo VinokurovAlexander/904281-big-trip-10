@@ -214,6 +214,18 @@ export default class Form extends AbstractSmartComponent {
     });
 
     element.querySelector(`.event__favorite-btn`).addEventListener(`click`, debounce(this._favoriteBtnClickHandler));
+
+    element.addEventListener(`click`, (evt) => {
+      if (evt.target.classList.contains(`event__offer-checkbox`)) {
+        const currentOffer = evt.target.dataset.title;
+
+        this._eventOffers.forEach((pointOffer) => {
+          if (pointOffer.title === currentOffer) {
+            pointOffer.checked = !pointOffer.checked;
+          }
+        });
+      }
+    });
   }
 
   _favoriteBtnClickHandler() {
