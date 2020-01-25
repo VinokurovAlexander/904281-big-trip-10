@@ -3,7 +3,7 @@ import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
 import {ucFirst} from "../utils/utils";
 import AbstractSmartComponent from "./abstract-smart-component";
-import {pointTypes} from "../mock/event";
+import {pointTypes} from "../const";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
 import {debounce} from "../utils/debounce";

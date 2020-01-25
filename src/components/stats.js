@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import {pointTypes} from "../mock/event";
+import {pointTypes} from "../const";
 import moment from "moment";
 
 const ChartTitle = {

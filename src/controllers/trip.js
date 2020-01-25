@@ -1,6 +1,6 @@
 import PointController from "./point";
 import PointsComponent from "../components/points";
-import {emptyPoint} from "../mock/event";
+import {getEventType} from "../models/point";
 import {hiddenClass, sortTypes} from "../const";
 import TripInfo from "../components/trip-info";
 import {render, remove, RenderPosition} from "../utils/render";
@@ -8,6 +8,22 @@ import moment from "moment";
 import DayItem from "../components/day-item";
 import NoPoints from "../components/no-points";
 import Sort from "../components/sort";
+import {getDuration} from "../utils/date";
+
+export const emptyPoint = {
+  destination: ``,
+  type: getEventType(``, `flight`),
+  price: ``,
+  description: ``,
+  images: [],
+  offers: [],
+  calendar: {
+    start: new Date(),
+    end: new Date(),
+    duration: getDuration(new Date(), new Date())
+  },
+  isFavorite: false,
+};
 
 export default class TripController {
   constructor(container, pointsModel, api) {

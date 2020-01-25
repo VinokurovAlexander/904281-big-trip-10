@@ -1,5 +1,25 @@
-import {getEventType} from "../mock/event";
 import {getDuration} from "../utils/date";
+import {getRandomArrayItem} from "../utils/random";
+import {ucFirst} from "../utils/utils";
+import {pointTypes} from "../const";
+
+export const getEventType = (destination, currentType = null) => {
+  let type = {};
+
+  if (!currentType) {
+    type = getRandomArrayItem(Object.values(pointTypes));
+  } else {
+    Object.keys(pointTypes).map((pointType) => {
+      if (pointType === currentType) {
+        type = Object.assign({}, pointTypes[currentType]);
+      }
+    });
+  }
+
+  return Object.assign(type, {
+    title: `${ucFirst(type.name)} ${type.group === `transfer` ? `to` : `at`} ${destination}`
+  });
+};
 
 export default class Point {
   constructor(data) {
