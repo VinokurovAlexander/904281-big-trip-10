@@ -53,7 +53,9 @@ Promise.all([apiWithProvider.getPoints(), apiWithProvider.getDestinations(), api
 
     const tripControls = new TripControlsTab();
     render(tripControlsBlock, tripControls, RenderPosition.AFTERBEGIN);
-    tripControls.setClickHandler((type) => {
+    tripControls.setClickHandler((evt) => {
+      const type = evt.target.textContent;
+
       switch (type) {
         case controls.STATS.title:
           tripController.hide();
