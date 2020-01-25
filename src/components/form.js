@@ -13,6 +13,10 @@ const DefaultData = {
   submitBtnText: `Save`
 };
 
+const getOffersCopy = (offers) => {
+  return offers.map((offer) => Object.assign({}, offer));
+};
+
 export default class Form extends AbstractSmartComponent {
   constructor(event, destinations, allOffers) {
     super();
@@ -21,7 +25,7 @@ export default class Form extends AbstractSmartComponent {
     this._eventDestination = this._event.destination;
     this._eventDescription = this._event.description;
     this._eventTypeName = this._event.type.name;
-    this._eventOffers = this._event.offers;
+    this._eventOffers = getOffersCopy(this._event.offers);
     this._eventIsFavorite = this._event.isFavorite;
     this._eventStart = this._event.calendar.start;
     this._eventEnd = this._event.calendar.end;
@@ -42,6 +46,7 @@ export default class Form extends AbstractSmartComponent {
     this._dateChangeHandler = this._dateChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
+    this._offerChangeHandler = this._offerChangeHandler.bind(this);
 
     this._flatpickr = {
       start: null,
@@ -215,23 +220,25 @@ export default class Form extends AbstractSmartComponent {
 
     element.querySelector(`.event__favorite-btn`).addEventListener(`click`, debounce(this._favoriteBtnClickHandler));
 
-    element.addEventListener(`click`, (evt) => {
-      if (evt.target.classList.contains(`event__offer-checkbox`)) {
-        const currentOffer = evt.target.dataset.title;
-
-        this._eventOffers.forEach((pointOffer) => {
-          if (pointOffer.title === currentOffer) {
-            pointOffer.checked = !pointOffer.checked;
-          }
-        });
-      }
-    });
+    element.addEventListener(`click`, this._offerChangeHandler);
   }
 
   _favoriteBtnClickHandler() {
     this._eventIsFavorite = !this._eventIsFavorite;
 
     this.rerender();
+  }
+
+  _offerChangeHandler(evt) {
+    if (evt.target.classList.contains(`event__offer-checkbox`)) {
+      const currentOffer = evt.target.dataset.title;
+
+      this._eventOffers.forEach((pointOffer) => {
+        if (pointOffer.title === currentOffer) {
+          pointOffer.checked = !pointOffer.checked;
+        }
+      });
+    }
   }
 
   _dateChangeHandler(evt) {
@@ -294,6 +301,7 @@ export default class Form extends AbstractSmartComponent {
     this._eventStart = event.calendar.start;
     this._eventEnd = event.calendar.end;
     this._eventPrice = event.price;
+    this._eventOffers = event.offers;
 
     this.rerender();
   }
