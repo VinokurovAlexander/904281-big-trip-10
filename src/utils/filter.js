@@ -1,4 +1,4 @@
-import {filtersType} from "../mock/filters";
+import {FiltersType} from "../components/filter";
 import moment from "moment";
 
 const getPointsByTime = (points, time) => {
@@ -6,9 +6,9 @@ const getPointsByTime = (points, time) => {
 
   return points.filter((point) => {
     switch (time) {
-      case `future`:
+      case `Future`:
         return moment(point.calendar.start).isAfter(moment(currentDate));
-      case `past`:
+      case `Past`:
         return moment(point.calendar.start).isBefore(moment(currentDate));
     }
 
@@ -19,11 +19,11 @@ const getPointsByTime = (points, time) => {
 
 export const getPointsByFilter = (points, filter) => {
   switch (filter) {
-    case filtersType.FUTURE.value:
-      return getPointsByTime(points, `future`);
+    case FiltersType.FUTURE:
+      return getPointsByTime(points, FiltersType.FUTURE);
 
-    case filtersType.PAST.value:
-      return getPointsByTime(points, `past`);
+    case FiltersType.PAST:
+      return getPointsByTime(points, FiltersType.PAST);
   }
 
   return points;

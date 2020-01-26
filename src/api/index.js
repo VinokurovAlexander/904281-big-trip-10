@@ -7,13 +7,13 @@ const Method = {
   DELETE: `DELETE`
 };
 
-const successStatusCodeRange = {
+const SuccessStatusCodeRange = {
   MIN: 200,
   MAX: 300
 };
 
 const checkStatus = (response) => {
-  if (response.status >= successStatusCodeRange.MIN && response.status < successStatusCodeRange.MAX) {
+  if (response.status >= SuccessStatusCodeRange.MIN && response.status < SuccessStatusCodeRange.MAX) {
     return response;
   } else {
     throw new Error(`${response.status}: ${response.statusText}`);

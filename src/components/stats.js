@@ -1,8 +1,20 @@
-import AbstractComponent from "./abstract-components";
+import AbstractSmartComponent from "./abstract-smart-component";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import {pointTypes} from "../mock/event";
+import {pointTypes} from "../const";
 import moment from "moment";
+
+const ChartTitle = {
+  MONEY: `MONEY`,
+  TRANSPORT: `TRANSPORT`,
+  TIME: `TIME SPENT`
+};
+
+const LabelPrefix = {
+  MONEY: `€ `,
+  TRANSPORT: `x`,
+  TIME: `H`
+};
 
 const createStatsTemplate = () => (
   `<section class="statistics">
@@ -22,13 +34,7 @@ const createStatsTemplate = () => (
   </section>`
 );
 
-const getLabel = (pointName) => {
-  if (pointName === `CHECK-IN`) {
-    pointName = `CHECKIN`;
-  }
-
-  return `${String.fromCodePoint(pointTypes[pointName].emoji)}${pointName} `;
-};
+const getLabel = (pointName) => `${String.fromCodePoint(pointTypes[pointName].emoji)}${pointName} `;
 
 const getSortData = (data) => {
   const sortData = {
@@ -117,9 +123,9 @@ const renderMoneyChart = (moneyCtx, points) => {
   });
 
   const sortData = getSortData(data);
-  const setDatalabelsViewFormat = (value) => `€ ` + value;
+  const setDatalabelsViewFormat = (value) => LabelPrefix.MONEY + value;
 
-  return getChart(moneyCtx, sortData, `MONEY`, setDatalabelsViewFormat);
+  return getChart(moneyCtx, sortData, ChartTitle.MONEY, setDatalabelsViewFormat);
 };
 
 const renderTransportChart = (transportCtx, points) => {
@@ -134,9 +140,9 @@ const renderTransportChart = (transportCtx, points) => {
   });
 
   const sortData = getSortData(data);
-  const setDatalabelsViewFormat = (value) => value + `x`;
+  const setDatalabelsViewFormat = (value) => value + LabelPrefix.TRANSPORT;
 
-  return getChart(transportCtx, sortData, `TRANSPORT`, setDatalabelsViewFormat);
+  return getChart(transportCtx, sortData, ChartTitle.TRANSPORT, setDatalabelsViewFormat);
 };
 
 const renderTimeChart = (timeCtx, points) => {
@@ -157,16 +163,18 @@ const renderTimeChart = (timeCtx, points) => {
   const sortData = getSortData(data);
   sortData.values = sortData.values.map((time) => Math.floor(time / 60));
 
-  const setDatalabelsViewFormat = (value) => value + `H`;
+  const setDatalabelsViewFormat = (value) => value + LabelPrefix.TIME;
 
-  return getChart(timeCtx, sortData, `TIME SPENT`, setDatalabelsViewFormat);
+  return getChart(timeCtx, sortData, ChartTitle.TIME, setDatalabelsViewFormat);
 };
 
-export default class Stats extends AbstractComponent {
+export default class Stats extends AbstractSmartComponent {
   constructor(pointsModel) {
     super();
 
     this._pointsModel = pointsModel;
+    this._charts = [];
+
     this._renderCharts();
   }
 
@@ -179,12 +187,35 @@ export default class Stats extends AbstractComponent {
     const points = this._pointsModel.getPoints();
 
     const moneyCtx = element.querySelector(`.statistics__chart--money`);
-    renderMoneyChart(moneyCtx, points);
+    this._charts.push(renderMoneyChart(moneyCtx, points));
 
     const transportCtx = element.querySelector(`.statistics__chart--transport`);
-    renderTransportChart(transportCtx, points);
+    this._charts.push(renderTransportChart(transportCtx, points));
 
     const timeCtx = element.querySelector(`.statistics__chart--time`);
-    renderTimeChart(timeCtx, points);
+    this._charts.push(renderTimeChart(timeCtx, points));
   }
+
+  show() {
+    super.show();
+
+    this._rerender();
+  }
+
+  _rerender() {
+    super.rerender();
+    this._resetCharts();
+    this._renderCharts();
+  }
+
+  _resetCharts() {
+    if (this._charts) {
+      this._charts.map((chart) => {
+        chart.destroy();
+        return null;
+      });
+    }
+  }
+
+  recoveryListeners() {}
 }

@@ -1,12 +1,5 @@
 import moment from "moment";
-/**
- * Возвращает разницу во времени между датами.
- *
- * @param {object} firstDate - Объект Date начальное время.
- * @param {object} secondDate - Объект Date конечное время.
- * @return {string} Время в формате 2D:13H:25M.
- *
- */
+
 const getDuration = (firstDate, secondDate) => {
   let duration = ``;
   const startTime = moment(firstDate);

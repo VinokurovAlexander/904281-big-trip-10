@@ -1,13 +1,13 @@
 import TripController from "./controllers/trip";
 import {render, RenderPosition} from "./utils/render";
 import PointsModel from "./models/points";
-import FilterController from "./controllers/filter";
 import Stats from "./components/stats";
 import Api from "./api";
 import TripControlsTab from "./components/trip-controls";
 import Store from "./api/store";
 import Provider from "./api/provider";
 import {controls} from "./components/trip-controls";
+import FilterController from "./controllers/filter";
 
 const AUTHORIZATION = `Basic af4SoYEdfYde`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
@@ -53,7 +53,9 @@ Promise.all([apiWithProvider.getPoints(), apiWithProvider.getDestinations(), api
 
     const tripControls = new TripControlsTab();
     render(tripControlsBlock, tripControls, RenderPosition.AFTERBEGIN);
-    tripControls.setClickHandler((type) => {
+    tripControls.setClickHandler((evt) => {
+      const type = evt.target.textContent;
+
       switch (type) {
         case controls.STATS.title:
           tripController.hide();

@@ -1,25 +1,13 @@
 import AbstractComponent from "./abstract-components";
+import {SortTypes} from "../const";
 
-const sortItems = {
-  EVENT: {
-    value: `Event`,
-    isChecked: `checked`
-  },
-  TIME: {
-    value: `Time`,
-    isChecked: ``,
-  },
-  PRICE: {
-    value: `Price`,
-    isChecked: ``,
-  },
-};
-
-const createTripSortItemTemplate = (sortItem, index) => (
-  `<div class="trip-sort__item  trip-sort__item--${sortItem.value.toLowerCase()}">
-    <input id="sort-${index}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${sortItem.value.toLowerCase()}" ${sortItem.isChecked}>
-    <label class="trip-sort__btn" for="sort-${index}" data-sort="${sortItem.value.toLowerCase()}">
-      ${sortItem.value}
+const createTripSortItemTemplate = (sortType, activeSort, index) => (
+  `<div class="trip-sort__item  trip-sort__item--${sortType.toLowerCase()}">
+    <input id="sort-${index}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" 
+        value="sort-${sortType.toLowerCase()}" 
+        ${sortType === activeSort ? `checked` : ``}>
+    <label class="trip-sort__btn" for="sort-${index}" data-sort="${sortType}">
+      ${sortType}
       <svg class="trip-sort__direction-icon" width="8" height="10" viewBox="0 0 8 10">
         <path d="M2.888 4.852V9.694H5.588V4.852L7.91 5.068L4.238 0.00999987L0.548 5.068L2.888 4.852Z"/>
       </svg>
@@ -27,8 +15,8 @@ const createTripSortItemTemplate = (sortItem, index) => (
   </div>`
 );
 
-const createTripSortListTemplate = () => {
-  const tripSortItems = Object.values(sortItems).map((sortItem, index) => createTripSortItemTemplate(sortItem, index)).join(`\n`);
+const createTripSortListTemplate = (activeSort) => {
+  const tripSortItems = Object.values(SortTypes).map((sortItem, index) => createTripSortItemTemplate(sortItem, activeSort, index)).join(`\n`);
 
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -40,14 +28,14 @@ const createTripSortListTemplate = () => {
 };
 
 export default class Sort extends AbstractComponent {
-  constructor() {
+  constructor(sortType) {
     super();
 
-    this._sortType = null;
+    this._sortType = sortType;
   }
 
   getTemplate() {
-    return createTripSortListTemplate();
+    return createTripSortListTemplate(this._sortType);
   }
 
   setChangeSortHandler(handler) {

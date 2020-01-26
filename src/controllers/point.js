@@ -12,6 +12,41 @@ const Mode = {
 };
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
+const OFFER_FROM_DATA_SPLICE_INDEX = 12;
+
+const getCheckedOffersFromFormData = (formData) => {
+  let checkedOffers = [];
+  for (let [name] of formData) {
+    if (name.includes(`event-offer-`)) {
+      const checkedOffer = name.slice(OFFER_FROM_DATA_SPLICE_INDEX);
+      checkedOffers.push(checkedOffer);
+    }
+  }
+
+  return checkedOffers;
+};
+
+const getOffersByPointType = (pointType, allOffers) => {
+  let offers = [];
+  allOffers.forEach((offer) => {
+    if (offer.type === pointType) {
+      offers = offer.offers;
+    }
+  });
+
+  return offers;
+};
+
+const getFormOffers = (pointType, allOffers, formData) => {
+  let checkedOffers = getCheckedOffersFromFormData(formData);
+  let formOffers = getOffersByPointType(pointType, allOffers);
+
+  formOffers.forEach((offer) => {
+    offer.checked = !!checkedOffers.find((checkedOffer) => checkedOffer === offer.title);
+  });
+
+  return formOffers;
+};
 
 export default class PointController {
   constructor(container, onDataChange, onViewChange) {
@@ -88,13 +123,6 @@ export default class PointController {
       this._onDataChange(this, oldData, newData);
     });
 
-    this._pointEditComponent.setFavoriteBtnClickHandler(() => {
-      const newPoint = Point.clone(point);
-      newPoint.isFavorite = !newPoint.isFavorite;
-
-      this._onDataChange(this, point, newPoint);
-    });
-
     this._pointEditComponent.setDeleteBtnClickHandler(() => {
       this._pointEditComponent.setData({
         deleteBtnText: `Deleting...`
@@ -133,12 +161,7 @@ export default class PointController {
   _parseFormData(formData, id) {
     const pointType = formData.get(`event-type`);
 
-    let formOffers = [];
-    this._pointEditComponent.allOffers.forEach((offer) => {
-      if (offer.type === pointType) {
-        formOffers = offer.offers;
-      }
-    });
+    const formOffers = getFormOffers(pointType, this._pointEditComponent.allOffers, formData);
 
     const formDestination = formData.get(`event-destination`);
     let formImages = [];

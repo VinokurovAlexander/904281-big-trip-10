@@ -3,13 +3,18 @@ import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
 import {ucFirst} from "../utils/utils";
 import AbstractSmartComponent from "./abstract-smart-component";
-import {pointTypes} from "../mock/event";
+import {pointTypes} from "../const";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
+import {debounce} from "../utils/debounce";
 
-const DefaultData = {
+const defaultData = {
   deleteBtnText: `Delete`,
   submitBtnText: `Save`
+};
+
+const getOffersCopy = (offers) => {
+  return offers.map((offer) => Object.assign({}, offer));
 };
 
 export default class Form extends AbstractSmartComponent {
@@ -20,13 +25,13 @@ export default class Form extends AbstractSmartComponent {
     this._eventDestination = this._event.destination;
     this._eventDescription = this._event.description;
     this._eventTypeName = this._event.type.name;
-    this._eventOffers = this._event.offers;
+    this._eventOffers = getOffersCopy(this._event.offers);
     this._eventIsFavorite = this._event.isFavorite;
     this._eventStart = this._event.calendar.start;
     this._eventEnd = this._event.calendar.end;
     this._eventPrice = this._event.price;
 
-    this._externalData = DefaultData;
+    this._externalData = defaultData;
 
     this.destinations = destinations;
     this.allOffers = allOffers;
@@ -34,9 +39,14 @@ export default class Form extends AbstractSmartComponent {
     this.id = event.id;
 
     this._submitHandler = null;
-    this._favoriteClickHandler = null;
     this._deleteBtnClickHandler = null;
     this._rollupBtnClickHanlder = null;
+
+    this._favoriteBtnClickHandler = this._favoriteBtnClickHandler.bind(this);
+    this._dateChangeHandler = this._dateChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
+    this._offerChangeHandler = this._offerChangeHandler.bind(this);
 
     this._flatpickr = {
       start: null,
@@ -107,7 +117,7 @@ export default class Form extends AbstractSmartComponent {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${ucFirst(this._eventTypeName)} at
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._eventDestination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._eventDestination}" list="destination-list-1" required>
           <datalist id="destination-list-1">
             ${citiesList}
           </datalist>
@@ -175,17 +185,12 @@ export default class Form extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return this._createEditPointFormTemplate(DefaultData);
+    return this._createEditPointFormTemplate(defaultData);
   }
 
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
     this._submitHandler = handler;
-  }
-
-  setFavoriteBtnClickHandler(handler) {
-    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, handler);
-    this._favoriteClickHandler = handler;
   }
 
   setDeleteBtnClickHandler(handler) {
@@ -201,59 +206,86 @@ export default class Form extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const element = this.getElement();
 
-    element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
-      if (evt.target.tagName === `INPUT`) {
-        const eventType = evt.target.value;
-        this._eventTypeName = `${eventType}`;
-        this.allOffers.forEach((offer) => {
-          if (offer.type === eventType) {
-            this._eventOffers = offer.offers;
-          }
-        });
+    element.querySelector(`.event__type-list`).addEventListener(`click`, this._eventTypeChangeHandler);
 
-        this.rerender();
-      }
-    });
-
-    element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
-      const currentCity = evt.target.value;
-
-      this.destinations.map((city) => {
-        if (currentCity === city.name) {
-          this._eventDescription = city.description;
-          this._eventDestination = city.name;
-
-          evt.target.setCustomValidity(``);
-          this.rerender();
-        } else {
-          evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
-        }
-      });
-    });
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
 
     Array.from(element.querySelectorAll(`.event__input--time`)).map((dateElement) => {
-      dateElement.addEventListener(`change`, (evt) => {
-        const currentStartDate = new Date(this._flatpickr.start.input.value);
-        const currentEndDate = new Date(this._flatpickr.end.input.value);
-        if ((moment(currentEndDate).isBefore(moment(currentStartDate)))) {
-          evt.target.nextSibling.setCustomValidity(`Дата окончания не может быть меньше даты начала события`);
-        } else {
-          evt.target.nextSibling.setCustomValidity(``);
-          this._eventStart = currentStartDate;
-          this._eventEnd = currentEndDate;
-          this.rerender();
-        }
-      });
+      dateElement.addEventListener(`change`, this._dateChangeHandler);
     });
 
     element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
       this._eventPrice = evt.target.value;
     });
+
+    element.querySelector(`.event__favorite-btn`).addEventListener(`click`, debounce(this._favoriteBtnClickHandler));
+
+    element.addEventListener(`click`, this._offerChangeHandler);
+  }
+
+  _favoriteBtnClickHandler() {
+    this._eventIsFavorite = !this._eventIsFavorite;
+
+    this.rerender();
+  }
+
+  _offerChangeHandler(evt) {
+    if (evt.target.classList.contains(`event__offer-checkbox`)) {
+      const currentOffer = evt.target.dataset.title;
+
+      this._eventOffers.forEach((pointOffer) => {
+        if (pointOffer.title === currentOffer) {
+          pointOffer.checked = !pointOffer.checked;
+        }
+      });
+    }
+  }
+
+  _dateChangeHandler(evt) {
+    const currentStartDate = new Date(this._flatpickr.start.input.value);
+    const currentEndDate = new Date(this._flatpickr.end.input.value);
+    if ((moment(currentEndDate).isBefore(moment(currentStartDate)))) {
+      evt.target.nextSibling.setCustomValidity(`Дата окончания не может быть меньше даты начала события`);
+    } else {
+      evt.target.nextSibling.setCustomValidity(``);
+      this._eventStart = currentStartDate;
+      this._eventEnd = currentEndDate;
+      this.rerender();
+    }
+  }
+
+  _destinationChangeHandler(evt) {
+    const currentCity = evt.target.value;
+
+    this.destinations.map((city) => {
+      if (currentCity === city.name) {
+        this._eventDescription = city.description;
+        this._eventDestination = city.name;
+
+        evt.target.setCustomValidity(``);
+        this.rerender();
+      } else {
+        evt.target.setCustomValidity(`Необходимо выбрать город из списка`);
+      }
+    });
+  }
+
+  _eventTypeChangeHandler(evt) {
+    if (evt.target.tagName === `INPUT`) {
+      const eventType = evt.target.value;
+      this._eventTypeName = `${eventType}`;
+      this.allOffers.forEach((offer) => {
+        if (offer.type === eventType) {
+          this._eventOffers = offer.offers;
+        }
+      });
+
+      this.rerender();
+    }
   }
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
-    this.setFavoriteBtnClickHandler(this._favoriteClickHandler);
     this.setDeleteBtnClickHandler(this._deleteBtnClickHandler);
     this.setRollupBtnClickHandler(this._rollupBtnClickHanlder);
     this._subscribeOnEvents();
@@ -269,6 +301,7 @@ export default class Form extends AbstractSmartComponent {
     this._eventStart = event.calendar.start;
     this._eventEnd = event.calendar.end;
     this._eventPrice = event.price;
+    this._eventOffers = event.offers;
 
     this.rerender();
   }
@@ -294,7 +327,7 @@ export default class Form extends AbstractSmartComponent {
   }
 
   setData(data) {
-    this._externalData = Object.assign({}, DefaultData, data);
+    this._externalData = Object.assign({}, defaultData, data);
     this.rerender();
   }
 
