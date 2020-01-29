@@ -115,11 +115,8 @@ const renderMoneyChart = (moneyCtx, points) => {
   points.forEach((point) => {
     const pointType = point.type.name;
     const pointPrice = point.price;
-    if (data[pointType]) {
-      data[pointType] += pointPrice;
-    } else {
-      data[pointType] = pointPrice;
-    }
+
+    data[pointType] = data[pointType] ? data[pointType] + pointPrice : pointPrice;
   });
 
   const sortData = getSortData(data);
@@ -132,11 +129,8 @@ const renderTransportChart = (transportCtx, points) => {
   const data = {};
   points.map((point) => {
     const pointType = point.type.name;
-    if (data[pointType]) {
-      data[pointType]++;
-    } else {
-      data[pointType] = 1;
-    }
+
+    data[pointType] = data[pointType] ? data[pointType] + 1 : 1;
   });
 
   const sortData = getSortData(data);
@@ -153,11 +147,7 @@ const renderTimeChart = (timeCtx, points) => {
     const minutesDuration = moment(endTime).diff(moment(startTime), `minutes`);
     const pointType = point.type.name;
 
-    if (data[pointType]) {
-      data[pointType] += minutesDuration;
-    } else {
-      data[pointType] = minutesDuration;
-    }
+    data[pointType] = data[pointType] ? data[pointType] + minutesDuration : minutesDuration;
   });
 
   const sortData = getSortData(data);
