@@ -108,20 +108,21 @@ export default class TripController {
     if (points.length === 0) {
       this._noPointsComponent = new NoPoints();
       render(this._container, this._noPointsComponent, RenderPosition.BEFOREEND);
-    } else {
-      this._sortComponent = new Sort(this._activeSort);
-      render(this._container, this._sortComponent, RenderPosition.AFTERBEGIN);
-
-      const tripInfoBlock = document.querySelector(`.trip-info`);
-      this._tripInfoComponent = new TripInfo(points);
-      render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
-
-      this._sortComponent.setChangeSortHandler(this._sortChange);
-      this._sortChange(this._activeSort);
-
-      const tripFullPriceElement = tripInfoBlock.querySelector(`.trip-info__cost-value`);
-      tripFullPriceElement.textContent = this._getFullPrice(points);
+      return;
     }
+
+    this._sortComponent = new Sort(this._activeSort);
+    render(this._container, this._sortComponent, RenderPosition.AFTERBEGIN);
+
+    const tripInfoBlock = document.querySelector(`.trip-info`);
+    this._tripInfoComponent = new TripInfo(points);
+    render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
+
+    this._sortComponent.setChangeSortHandler(this._sortChange);
+    this._sortChange(this._activeSort);
+
+    const tripFullPriceElement = tripInfoBlock.querySelector(`.trip-info__cost-value`);
+    tripFullPriceElement.textContent = this._getFullPrice(points);
   }
 
   _sortChange(sortType) {

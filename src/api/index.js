@@ -15,9 +15,9 @@ const SuccessStatusCodeRange = {
 const checkStatus = (response) => {
   if (response.status >= SuccessStatusCodeRange.MIN && response.status < SuccessStatusCodeRange.MAX) {
     return response;
-  } else {
-    throw new Error(`${response.status}: ${response.statusText}`);
   }
+
+  return new Error(`${response.status}: ${response.statusText}`);
 };
 
 export default class Api {
