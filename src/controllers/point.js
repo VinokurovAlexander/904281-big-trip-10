@@ -44,28 +44,28 @@ const getFormOffers = (pointType, allOffers, formData) => {
 };
 
 export default class PointController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, setDataChange, setViewChange) {
     this._container = container;
     this._pointComponent = null;
     this._pointEditComponent = null;
-    this._onDataChange = onDataChange;
-    this._onViewChange = onViewChange;
+    this._setDataChange = setDataChange;
+    this._setViewChange = setViewChange;
 
     this._mode = Mode.DEFAULT;
 
     this._replaceEditToPoint = this._replaceEditToPoint.bind(this);
-    this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._setEscKeyDownHandler = this._setEscKeyDownHandler.bind(this);
   }
 
   _replacePointToEdit() {
-    this._onViewChange();
+    this._setViewChange();
 
     replace(this._pointEditComponent, this._pointComponent);
     this._mode = Mode.EDIT;
   }
 
   _replaceEditToPoint() {
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
+    document.removeEventListener(`keydown`, this._setEscKeyDownHandler);
 
     this._pointEditComponent.reset();
     replace(this._pointComponent, this._pointEditComponent);
@@ -73,7 +73,7 @@ export default class PointController {
     this._mode = Mode.DEFAULT;
   }
 
-  _onEscKeyDown(evt) {
+  _setEscKeyDownHandler(evt) {
     if (this._mode === Mode.ADDING) {
       isEscEvent(evt, () => remove(this._pointEditComponent));
     } else {
@@ -99,7 +99,7 @@ export default class PointController {
 
     this._pointComponent.setOpenFormHandler(() => {
       this._replacePointToEdit();
-      document.addEventListener(`keydown`, this._onEscKeyDown);
+      document.addEventListener(`keydown`, this._setEscKeyDownHandler);
     });
 
     this._pointEditComponent.setSubmitHandler((evt) => {
@@ -115,7 +115,7 @@ export default class PointController {
       const formData = this._pointEditComponent.getData(evt.target);
       const id = this._pointEditComponent.id;
       const newData = this._parseFormData(formData, id);
-      this._onDataChange(this, oldData, newData);
+      this._setDataChange(this, oldData, newData);
     });
 
     this._pointEditComponent.setDeleteBtnClickHandler(() => {
@@ -123,7 +123,7 @@ export default class PointController {
         deleteBtnText: this._mode !== Mode.ADDING ? `Deleting...` : `Canceling...`
       });
       this._pointEditComponent.disableButtons(true);
-      this._onDataChange(this, point, null);
+      this._setDataChange(this, point, null);
     });
 
     this._pointEditComponent.setRollupBtnClickHandler(() => {
@@ -142,7 +142,7 @@ export default class PointController {
       case Mode.ADDING:
         render(this._container, this._pointComponent, RenderPosition.AFTERBEGIN);
         this._replacePointToEdit();
-        document.addEventListener(`keydown`, this._onEscKeyDown);
+        document.addEventListener(`keydown`, this._setEscKeyDownHandler);
         this._mode = Mode.ADDING;
     }
   }
@@ -150,7 +150,7 @@ export default class PointController {
   destroy() {
     remove(this._pointComponent);
     remove(this._pointEditComponent);
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
+    document.removeEventListener(`keydown`, this._setEscKeyDownHandler);
   }
 
   _parseFormData(formData, id) {

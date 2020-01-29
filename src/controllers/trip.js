@@ -46,8 +46,8 @@ export default class TripController {
       offers: pointsModel.getOffers()
     };
 
-    this._onDataChange = this._onDataChange.bind(this);
-    this._onViewChange = this._onViewChange.bind(this);
+    this._setDataChange = this._setDataChange.bind(this);
+    this._setViewChange = this._setViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._sortChange = this._sortChange.bind(this);
 
@@ -55,7 +55,7 @@ export default class TripController {
     render(this._container, this._pointsContainerComponent, RenderPosition.BEFOREEND);
   }
 
-  _onDataChange(pointController, oldData, newData) {
+  _setDataChange(pointController, oldData, newData) {
     if (oldData === emptyPoint) {
       const destroyedPoint = this._creatingPoint;
       this._creatingPoint = null;
@@ -98,7 +98,7 @@ export default class TripController {
     }
   }
 
-  _onViewChange() {
+  _setViewChange() {
     this._showedPointControllers.map((controller) => controller.setDefaultView());
   }
 
@@ -145,7 +145,7 @@ export default class TripController {
         break;
     }
     this._removePoints();
-    this._showedPointControllers = this._renderPoints(this._pointsContainerComponent.getElement(), sortedPoints, this._data, this._onDataChange, this._onViewChange);
+    this._showedPointControllers = this._renderPoints(this._pointsContainerComponent.getElement(), sortedPoints, this._data, this._setDataChange, this._setViewChange);
   }
 
   _removePoints() {
@@ -163,7 +163,7 @@ export default class TripController {
       this._creatingPoint.destroy();
     }
 
-    this._creatingPoint = new PointController(this._container, this._onDataChange, this._onViewChange);
+    this._creatingPoint = new PointController(this._container, this._setDataChange, this._setViewChange);
     this._creatingPoint.render(emptyPoint, this._data, `adding`);
   }
 
@@ -210,7 +210,7 @@ export default class TripController {
     return point.price + offersPrice;
   }
 
-  _renderPoints(pointsContainer, points, data, onDataChange, onViewChange) {
+  _renderPoints(pointsContainer, points, data, setDataChange, setViewChange) {
     let showedPointControllers = [];
 
     const dates = this._isDefaultSort
@@ -225,7 +225,7 @@ export default class TripController {
       })
         .forEach((filterPoint) => {
           const pointsList = dayItem.getElement().querySelector(`.trip-events__list`);
-          const pointController = new PointController(pointsList, onDataChange, onViewChange);
+          const pointController = new PointController(pointsList, setDataChange, setViewChange);
           pointController.render(filterPoint, data, `default`);
           showedPointControllers.push(pointController);
         });
