@@ -1,6 +1,6 @@
 import {getDuration} from "../utils/date";
 import {getRandomArrayItem} from "../utils/random";
-import {ucFirst} from "../utils/utils";
+import {makeUcFirst} from "../utils/utils";
 import {POINT_TYPES} from "../const";
 
 export const getEventType = (currentType = null) => {
@@ -17,7 +17,7 @@ export const getEventType = (currentType = null) => {
   }
 
   return Object.assign(type, {
-    title: `${ucFirst(type.name)} ${type.group === `transfer` ? `to` : `at`}`
+    title: `${makeUcFirst(type.name)} ${type.group === `transfer` ? `to` : `at`}`
   });
 };
 

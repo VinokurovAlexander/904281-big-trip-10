@@ -1,7 +1,7 @@
 import {createInputOfferTemplate} from "./offer-input";
 import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
-import {ucFirst} from "../utils/utils";
+import {makeUcFirst} from "../utils/utils";
 import AbstractSmartComponent from "./abstract-smart-component";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
@@ -85,7 +85,7 @@ export default class Form extends AbstractSmartComponent {
               value=${type.name} 
               ${this._eventType.name === type.name ? `checked` : ``}>
           <label class="event__type-label  event__type-label--${type.name}" 
-              for="event-type-${type.name}-1">${ucFirst(type.name)}
+              for="event-type-${type.name}-1">${makeUcFirst(type.name)}
           </label>
         </div>
         `);
@@ -130,7 +130,7 @@ export default class Form extends AbstractSmartComponent {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${ucFirst(this._eventType.title)}
+            ${makeUcFirst(this._eventType.title)}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._eventDestination}" list="destination-list-1" required>
           <datalist id="destination-list-1">
