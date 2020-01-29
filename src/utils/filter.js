@@ -6,16 +6,15 @@ const getPointsByTime = (points, time) => {
 
   return points.filter((point) => {
     switch (time) {
-      case `Future`:
+      case FiltersType.FUTURE:
         return moment(point.calendar.start).isAfter(moment(currentDate));
-      case `Past`:
+      case FiltersType.PAST:
         return moment(point.calendar.start).isBefore(moment(currentDate));
     }
 
     return points;
   });
 };
-
 
 export const getPointsByFilter = (points, filter) => {
   switch (filter) {
