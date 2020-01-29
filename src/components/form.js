@@ -7,6 +7,7 @@ import {pointTypes} from "../const";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
 import {debounce} from "../utils/debounce";
+import {getEventType} from "../models/point";
 
 const defaultData = {
   deleteBtnText: `Delete`,
@@ -24,7 +25,7 @@ export default class Form extends AbstractSmartComponent {
     this._event = event;
     this._eventDestination = this._event.destination;
     this._eventDescription = this._event.description;
-    this._eventTypeName = this._event.type.name;
+    this._eventType = Object.assign({}, this._event.type);
     this._eventOffers = getOffersCopy(this._event.offers);
     this._eventIsFavorite = this._event.isFavorite;
     this._eventStart = this._event.calendar.start;
@@ -70,8 +71,14 @@ export default class Form extends AbstractSmartComponent {
         .map((type) => {
           return (`
         <div class="event__type-item">
-          <input id="event-type-${type.name}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${type.name} ${this._eventTypeName === type.name ? `checked` : ``}>
-          <label class="event__type-label  event__type-label--${type.name}" for="event-type-${type.name}-1">${ucFirst(type.name)}</label>
+          <input id="event-type-${type.name}-1" 
+              class="event__type-input  visually-hidden" 
+              type="radio" name="event-type" 
+              value=${type.name} 
+              ${this._eventType.name === type.name ? `checked` : ``}>
+          <label class="event__type-label  event__type-label--${type.name}" 
+              for="event-type-${type.name}-1">${ucFirst(type.name)}
+          </label>
         </div>
         `);
         })
@@ -107,7 +114,7 @@ export default class Form extends AbstractSmartComponent {
        <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${this._eventTypeName}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${this._eventType.name}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
           ${this._createPointTypesList()}
@@ -115,7 +122,7 @@ export default class Form extends AbstractSmartComponent {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${ucFirst(this._eventTypeName)} at
+            ${ucFirst(this._eventType.title)}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._eventDestination}" list="destination-list-1" required>
           <datalist id="destination-list-1">
@@ -272,10 +279,10 @@ export default class Form extends AbstractSmartComponent {
 
   _eventTypeChangeHandler(evt) {
     if (evt.target.tagName === `INPUT`) {
-      const eventType = evt.target.value;
-      this._eventTypeName = `${eventType}`;
+      const currentEventType = evt.target.value;
+      this._eventType = getEventType(currentEventType);
       this.allOffers.forEach((offer) => {
-        if (offer.type === eventType) {
+        if (offer.type === currentEventType) {
           this._eventOffers = offer.offers;
         }
       });
@@ -296,7 +303,7 @@ export default class Form extends AbstractSmartComponent {
 
     this._eventDestination = event.destination;
     this._eventDescription = event.description;
-    this._eventTypeName = event.type.name;
+    this._eventType = Object.assign({}, event.type);
     this._eventIsFavorite = event.isFavorite;
     this._eventStart = event.calendar.start;
     this._eventEnd = event.calendar.end;

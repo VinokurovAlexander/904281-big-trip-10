@@ -12,7 +12,7 @@ import {getDuration} from "../utils/date";
 
 export const emptyPoint = {
   destination: ``,
-  type: getEventType(``, `flight`),
+  type: getEventType(`flight`),
   price: ``,
   description: ``,
   images: [],

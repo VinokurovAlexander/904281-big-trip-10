@@ -3,7 +3,7 @@ import {getRandomArrayItem} from "../utils/random";
 import {ucFirst} from "../utils/utils";
 import {pointTypes} from "../const";
 
-export const getEventType = (destination, currentType = null) => {
+export const getEventType = (currentType = null) => {
   let type = {};
 
   if (!currentType) {
@@ -17,14 +17,14 @@ export const getEventType = (destination, currentType = null) => {
   }
 
   return Object.assign(type, {
-    title: `${ucFirst(type.name)} ${type.group === `transfer` ? `to` : `at`} ${destination}`
+    title: `${ucFirst(type.name)} ${type.group === `transfer` ? `to` : `at`}`
   });
 };
 
 export default class Point {
   constructor(data) {
     this.id = data[`id`];
-    this.type = getEventType(data[`destination`][`name`], data[`type`]);
+    this.type = getEventType(data[`type`]);
     this.destination = data[`destination`][`name`];
     this.price = data[`base_price`];
     this.description = data[`destination`][`description`] || ``;
