@@ -4,7 +4,7 @@ import moment from "moment";
 
 const createPointTemplate = (point) => {
   const selectedOffers = point.offers
-    .filter((offer) => offer.checked === true)
+    .filter((offer) => offer.checked)
     .map((offer) => createEventOfferTemplate(offer)).join(`\n`);
 
   return (
