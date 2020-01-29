@@ -165,6 +165,7 @@ export default class TripController {
 
     this._creatingPoint = new PointController(this._container, this._setDataChange, this._setViewChange);
     this._creatingPoint.render(emptyPoint, this._data, `adding`);
+    this._showedPointControllers.push(this._creatingPoint);
   }
 
   show() {
@@ -198,7 +199,6 @@ export default class TripController {
   }
 
   _getFullPrice(points) {
-
     return points.reduce((price, point) => price + this._getPointPrice(point), 0);
   }
 
