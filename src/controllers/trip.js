@@ -55,6 +55,47 @@ export default class TripController {
     render(this._container, this._pointsContainerComponent, RenderPosition.BEFOREEND);
   }
 
+  show() {
+    this._container.classList.remove(HIDDEN_CLASS);
+  }
+
+  hide() {
+    this._container.classList.add(HIDDEN_CLASS);
+  }
+
+  render() {
+    const points = this._pointsModel.getPoints();
+
+    if (points.length === 0) {
+      this._noPointsComponent = new NoPoints();
+      render(this._container, this._noPointsComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    this._sortComponent = new Sort(this._activeSort);
+    render(this._container, this._sortComponent, RenderPosition.AFTERBEGIN);
+
+    const tripInfoBlock = document.querySelector(`.trip-info`);
+    this._tripInfoComponent = new TripInfo(points);
+    render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
+
+    this._sortComponent.setChangeSortHandler(this._sortChange);
+    this._sortChange(this._activeSort);
+
+    const tripFullPriceElement = tripInfoBlock.querySelector(`.trip-info__cost-value`);
+    tripFullPriceElement.textContent = this._getFullPrice(points);
+  }
+
+  createPoint() {
+    if (this._creatingPoint) {
+      this._creatingPoint.destroy();
+    }
+
+    this._creatingPoint = new PointController(this._container, this._setDataChange, this._setViewChange);
+    this._creatingPoint.render(emptyPoint, this._data, `adding`);
+    this._showedPointControllers.push(this._creatingPoint);
+  }
+
   _setDataChange(pointController, oldData, newData) {
     if (oldData === emptyPoint) {
       const destroyedPoint = this._creatingPoint;
@@ -170,29 +211,6 @@ export default class TripController {
     return points.reduce((price, point) => price + this._getPointPrice(point), 0);
   }
 
-  render() {
-    const points = this._pointsModel.getPoints();
-
-    if (points.length === 0) {
-      this._noPointsComponent = new NoPoints();
-      render(this._container, this._noPointsComponent, RenderPosition.BEFOREEND);
-      return;
-    }
-
-    this._sortComponent = new Sort(this._activeSort);
-    render(this._container, this._sortComponent, RenderPosition.AFTERBEGIN);
-
-    const tripInfoBlock = document.querySelector(`.trip-info`);
-    this._tripInfoComponent = new TripInfo(points);
-    render(tripInfoBlock, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
-
-    this._sortComponent.setChangeSortHandler(this._sortChange);
-    this._sortChange(this._activeSort);
-
-    const tripFullPriceElement = tripInfoBlock.querySelector(`.trip-info__cost-value`);
-    tripFullPriceElement.textContent = this._getFullPrice(points);
-  }
-
   _updatePoints() {
     this._removePoints();
 
@@ -213,24 +231,6 @@ export default class TripController {
     }
 
     this.render();
-  }
-
-  createPoint() {
-    if (this._creatingPoint) {
-      this._creatingPoint.destroy();
-    }
-
-    this._creatingPoint = new PointController(this._container, this._setDataChange, this._setViewChange);
-    this._creatingPoint.render(emptyPoint, this._data, `adding`);
-    this._showedPointControllers.push(this._creatingPoint);
-  }
-
-  show() {
-    this._container.classList.remove(HIDDEN_CLASS);
-  }
-
-  hide() {
-    this._container.classList.add(HIDDEN_CLASS);
   }
 
   _filterChangeHandler() {

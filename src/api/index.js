@@ -44,8 +44,29 @@ export default class Api {
     return this._getData(`offers`);
   }
 
+  updatePoint(id, data) {
+    return this._addData(Method.PUT, data, id);
+  }
+
   addPoint(data) {
     return this._addData(Method.POST, data);
+  }
+
+  deletePoint(id) {
+    return this._load({
+      url: `points/${id}`,
+      method: Method.DELETE,
+    });
+  }
+
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json());
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
@@ -67,26 +88,5 @@ export default class Api {
     })
       .then((response) => response.json())
       .then(Point.parsePoint);
-  }
-
-  updatePoint(id, data) {
-    return this._addData(Method.PUT, data, id);
-  }
-
-  deletePoint(id) {
-    return this._load({
-      url: `points/${id}`,
-      method: Method.DELETE,
-    });
-  }
-
-  sync(data) {
-    return this._load({
-      url: `points/sync`,
-      method: Method.POST,
-      body: JSON.stringify(data),
-      headers: new Headers({'Content-Type': `application/json`})
-    })
-      .then((response) => response.json());
   }
 }

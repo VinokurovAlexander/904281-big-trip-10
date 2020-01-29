@@ -172,6 +172,20 @@ export default class Stats extends AbstractSmartComponent {
     return createStatsTemplate();
   }
 
+  recoveryListeners() {}
+
+  show() {
+    super.show();
+
+    this._rerender();
+  }
+
+  _rerender() {
+    super.rerender();
+    this._resetCharts();
+    this._renderCharts();
+  }
+
   _renderCharts() {
     const element = this.getElement();
     const points = this._pointsModel.getPoints();
@@ -186,18 +200,6 @@ export default class Stats extends AbstractSmartComponent {
     this._charts.push(renderTimeChart(timeCtx, points));
   }
 
-  show() {
-    super.show();
-
-    this._rerender();
-  }
-
-  _rerender() {
-    super.rerender();
-    this._resetCharts();
-    this._renderCharts();
-  }
-
   _resetCharts() {
     if (this._charts) {
       this._charts.map((chart) => {
@@ -206,6 +208,4 @@ export default class Stats extends AbstractSmartComponent {
       });
     }
   }
-
-  recoveryListeners() {}
 }

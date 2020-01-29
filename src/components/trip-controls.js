@@ -38,6 +38,14 @@ export default class TripControlsTab extends AbstractComponent {
     return createTripControlsTabsTemplate();
   }
 
+  setClickHandler(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      if (evt.target.tagName === `A`) {
+        handler(evt);
+      }
+    });
+  }
+
   _subscribeOnEvents() {
     this.setClickHandler((evt) => {
       Array.from(this.getElement().querySelectorAll(`.trip-tabs__btn`)).forEach((btn) => {
@@ -47,14 +55,6 @@ export default class TripControlsTab extends AbstractComponent {
       });
 
       evt.target.classList.add(`trip-tabs__btn--active`);
-    });
-  }
-
-  setClickHandler(handler) {
-    this.getElement().addEventListener(`click`, (evt) => {
-      if (evt.target.tagName === `A`) {
-        handler(evt);
-      }
     });
   }
 }

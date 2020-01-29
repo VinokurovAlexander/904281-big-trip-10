@@ -10,25 +10,6 @@ export default class Provider {
     this._isSynchronized = true;
   }
 
-  addPoint(data) {
-    if (this._isOnline()) {
-      return this._api.addPoint(data)
-        .then((newPoint) => {
-          this._storage.setItem(`points`, [...this._storage.getAll().points, newPoint.toRAW()]);
-
-          return newPoint;
-        });
-    }
-
-    const offlineNewPointId = nanoid();
-    const offlineNewPoint = Point.parsePoint(Object.assign({}, data.toRAW(), {id: offlineNewPointId}));
-
-    this._storage.setItem(`points`, [...this._storage.getAll().points, offlineNewPoint.toRAW()]);
-    this._isSynchronized = false;
-
-    return Promise.resolve(offlineNewPoint);
-  }
-
   getPoints() {
     if (this._isOnline()) {
       return this._api.getPoints()
@@ -80,6 +61,29 @@ export default class Provider {
     return Promise.resolve(storeOffers);
   }
 
+  getSynchronize() {
+    return this._isSynchronized;
+  }
+
+  addPoint(data) {
+    if (this._isOnline()) {
+      return this._api.addPoint(data)
+        .then((newPoint) => {
+          this._storage.setItem(`points`, [...this._storage.getAll().points, newPoint.toRAW()]);
+
+          return newPoint;
+        });
+    }
+
+    const offlineNewPointId = nanoid();
+    const offlineNewPoint = Point.parsePoint(Object.assign({}, data.toRAW(), {id: offlineNewPointId}));
+
+    this._storage.setItem(`points`, [...this._storage.getAll().points, offlineNewPoint.toRAW()]);
+    this._isSynchronized = false;
+
+    return Promise.resolve(offlineNewPoint);
+  }
+
   updatePoint(id, data) {
     if (this._isOnline()) {
       return this._api.updatePoint(id, data)
@@ -111,14 +115,6 @@ export default class Provider {
     return Promise.resolve();
   }
 
-  _isOnline() {
-    return window.navigator.onLine;
-  }
-
-  getSynchronize() {
-    return this._isSynchronized;
-  }
-
   sync() {
     if (this._isOnline()) {
       const storePoints = this._storage.getAll().points;
@@ -140,5 +136,9 @@ export default class Provider {
     }
 
     return Promise.reject(new Error(`Sync data failed`));
+  }
+
+  _isOnline() {
+    return window.navigator.onLine;
   }
 }

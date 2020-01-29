@@ -57,56 +57,6 @@ export default class PointController {
     this._setEscKeyDownHandler = this._setEscKeyDownHandler.bind(this);
   }
 
-  _replacePointToEdit() {
-    this._setViewChange();
-
-    replace(this._pointEditComponent, this._pointComponent);
-    this._mode = Mode.EDIT;
-  }
-
-  _replaceEditToPoint() {
-    document.removeEventListener(`keydown`, this._setEscKeyDownHandler);
-
-    this._pointEditComponent.reset();
-    replace(this._pointComponent, this._pointEditComponent);
-
-    this._mode = Mode.DEFAULT;
-  }
-
-  _parseFormData(formData, id) {
-    const pointType = formData.get(`event-type`);
-
-    const formOffers = getFormOffers(pointType, this._pointEditComponent.allOffers, formData);
-
-    const formDestination = formData.get(`event-destination`);
-    let formImages = [];
-    let pointDescription = ``;
-    this._pointEditComponent.destinations.forEach((destination) => {
-      if (destination.name === formDestination) {
-        formImages = destination.pictures;
-        pointDescription = destination.description;
-      }
-    });
-
-    const startDate = he.encode(formData.get(`event-start-time`));
-    const endDate = he.encode(formData.get(`event-end-time`));
-
-    return new Point({
-      'id': id,
-      'type': pointType,
-      'destination': {
-        'name': formDestination,
-        'pictures': formImages,
-        'description': pointDescription
-      },
-      'base_price': he.encode(formData.get(`event-price`)),
-      'offers': formOffers,
-      'is_favorite': formData.get(`event-favorite`) === `on`,
-      'date_from': startDate,
-      'date_to': endDate
-    });
-  }
-
   render(point, data, mode) {
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
@@ -191,6 +141,56 @@ export default class PointController {
     } else if (this._mode === Mode.ADDING) {
       remove(this._pointEditComponent);
     }
+  }
+
+  _replacePointToEdit() {
+    this._setViewChange();
+
+    replace(this._pointEditComponent, this._pointComponent);
+    this._mode = Mode.EDIT;
+  }
+
+  _replaceEditToPoint() {
+    document.removeEventListener(`keydown`, this._setEscKeyDownHandler);
+
+    this._pointEditComponent.reset();
+    replace(this._pointComponent, this._pointEditComponent);
+
+    this._mode = Mode.DEFAULT;
+  }
+
+  _parseFormData(formData, id) {
+    const pointType = formData.get(`event-type`);
+
+    const formOffers = getFormOffers(pointType, this._pointEditComponent.allOffers, formData);
+
+    const formDestination = formData.get(`event-destination`);
+    let formImages = [];
+    let pointDescription = ``;
+    this._pointEditComponent.destinations.forEach((destination) => {
+      if (destination.name === formDestination) {
+        formImages = destination.pictures;
+        pointDescription = destination.description;
+      }
+    });
+
+    const startDate = he.encode(formData.get(`event-start-time`));
+    const endDate = he.encode(formData.get(`event-end-time`));
+
+    return new Point({
+      'id': id,
+      'type': pointType,
+      'destination': {
+        'name': formDestination,
+        'pictures': formImages,
+        'description': pointDescription
+      },
+      'base_price': he.encode(formData.get(`event-price`)),
+      'offers': formOffers,
+      'is_favorite': formData.get(`event-favorite`) === `on`,
+      'date_from': startDate,
+      'date_to': endDate
+    });
   }
 
   _setEscKeyDownHandler(evt) {

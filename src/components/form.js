@@ -75,6 +75,42 @@ export default class Form extends AbstractSmartComponent {
     return new FormData(this.getElement());
   }
 
+  getTemplate() {
+    return this._createEditPointFormTemplate(defaultData);
+  }
+
+  rerender() {
+    super.rerender();
+
+    this._applyFlatpickr();
+  }
+
+  reset() {
+    const event = this._event;
+
+    this._eventDestination = event.destination;
+    this._eventDescription = event.description;
+    this._eventType = Object.assign({}, event.type);
+    this._eventIsFavorite = event.isFavorite;
+    this._eventStart = event.calendar.start;
+    this._eventEnd = event.calendar.end;
+    this._eventPrice = event.price;
+    this._eventOffers = event.offers;
+
+    this.rerender();
+  }
+
+  recoveryListeners() {
+    this.setSubmitHandler(this._submitHandler);
+    this.setDeleteBtnClickHandler(this._deleteBtnClickHandler);
+    this.setRollupBtnClickHandler(this._rollupBtnClickHanlder);
+    this._subscribeOnEvents();
+  }
+
+  disableButtons(flag) {
+    this.getElement().querySelectorAll(`button`).forEach((btn) => (btn.disabled = flag));
+  }
+
   _createPointTypesList() {
     const createPointTypesItem = (types, group) => {
       return types
@@ -202,16 +238,6 @@ export default class Form extends AbstractSmartComponent {
     );
   }
 
-  getTemplate() {
-    return this._createEditPointFormTemplate(defaultData);
-  }
-
-  rerender() {
-    super.rerender();
-
-    this._applyFlatpickr();
-  }
-
   _favoriteBtnClickHandler() {
     this._eventIsFavorite = !this._eventIsFavorite;
 
@@ -273,21 +299,6 @@ export default class Form extends AbstractSmartComponent {
     }
   }
 
-  reset() {
-    const event = this._event;
-
-    this._eventDestination = event.destination;
-    this._eventDescription = event.description;
-    this._eventType = Object.assign({}, event.type);
-    this._eventIsFavorite = event.isFavorite;
-    this._eventStart = event.calendar.start;
-    this._eventEnd = event.calendar.end;
-    this._eventPrice = event.price;
-    this._eventOffers = event.offers;
-
-    this.rerender();
-  }
-
   _applyFlatpickr() {
     if (this._flatpickr.start && this._flatpickr.end) {
       for (let date of Object.keys(this._flatpickr)) {
@@ -302,17 +313,6 @@ export default class Form extends AbstractSmartComponent {
 
     this._flatpickr.start = flatpickrInit(eventStart, this._eventStart);
     this._flatpickr.end = flatpickrInit(eventEnd, this._eventEnd);
-  }
-
-  disableButtons(flag) {
-    this.getElement().querySelectorAll(`button`).forEach((btn) => (btn.disabled = flag));
-  }
-
-  recoveryListeners() {
-    this.setSubmitHandler(this._submitHandler);
-    this.setDeleteBtnClickHandler(this._deleteBtnClickHandler);
-    this.setRollupBtnClickHandler(this._rollupBtnClickHanlder);
-    this._subscribeOnEvents();
   }
 
   _subscribeOnEvents() {
