@@ -3,12 +3,11 @@ import {createEventImageTemplate} from "./event-image";
 import {createCityOptionTemplate} from "./cities-option";
 import {ucFirst} from "../utils/utils";
 import AbstractSmartComponent from "./abstract-smart-component";
-import {pointTypes} from "../const";
 import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
 import {debounce} from "../utils/debounce";
 import {getEventType} from "../models/point";
-import {Mode} from "../const";
+import {Mode, POINT_TYPES} from "../const";
 
 const defaultData = {
   deleteBtnText: `Delete`,
@@ -98,12 +97,12 @@ export default class Form extends AbstractSmartComponent {
     <div class="event__type-list">
       <fieldset class="event__type-group">
         <legend class="visually-hidden">Transfer</legend>
-        ${createPointTypesItem(Object.values(pointTypes), `transfer`)}
+        ${createPointTypesItem(Object.values(POINT_TYPES), `transfer`)}
       </fieldset>
 
       <fieldset class="event__type-group">
         <legend class="visually-hidden">Activity</legend>
-         ${createPointTypesItem(Object.values(pointTypes), `activity`)}
+         ${createPointTypesItem(Object.values(POINT_TYPES), `activity`)}
       </fieldset>
     </div>
   `);

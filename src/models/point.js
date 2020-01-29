@@ -1,17 +1,17 @@
 import {getDuration} from "../utils/date";
 import {getRandomArrayItem} from "../utils/random";
 import {ucFirst} from "../utils/utils";
-import {pointTypes} from "../const";
+import {POINT_TYPES} from "../const";
 
 export const getEventType = (currentType = null) => {
   let type = {};
 
   if (!currentType) {
-    type = getRandomArrayItem(Object.values(pointTypes));
+    type = getRandomArrayItem(Object.values(POINT_TYPES));
   } else {
-    Object.keys(pointTypes).map((pointType) => {
+    Object.keys(POINT_TYPES).map((pointType) => {
       if (pointType === currentType) {
-        type = Object.assign({}, pointTypes[currentType]);
+        type = Object.assign({}, POINT_TYPES[currentType]);
       }
     });
   }

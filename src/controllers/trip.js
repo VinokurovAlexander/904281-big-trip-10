@@ -1,7 +1,7 @@
 import PointController from "./point";
 import PointsComponent from "../components/points";
 import {getEventType} from "../models/point";
-import {hiddenClass, SortTypes} from "../const";
+import {HIDDEN_CLASS, SortTypes} from "../const";
 import TripInfo from "../components/trip-info";
 import {render, remove, RenderPosition} from "../utils/render";
 import moment from "moment";
@@ -168,11 +168,11 @@ export default class TripController {
   }
 
   show() {
-    this._container.classList.remove(hiddenClass);
+    this._container.classList.remove(HIDDEN_CLASS);
   }
 
   hide() {
-    this._container.classList.add(hiddenClass);
+    this._container.classList.add(HIDDEN_CLASS);
   }
 
   _updatePoints() {

@@ -1,4 +1,4 @@
-export const hiddenClass = `visually-hidden`;
+export const HIDDEN_CLASS = `visually-hidden`;
 
 export const SortTypes = {
   EVENT: `Event`,
@@ -12,7 +12,7 @@ export const Mode = {
   ADDING: `adding`
 };
 
-export const pointTypes = {
+export const POINT_TYPES = {
   'taxi': {
     name: `taxi`,
     group: `transfer`,

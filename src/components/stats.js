@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import {pointTypes} from "../const";
+import {POINT_TYPES} from "../const";
 import moment from "moment";
 
 const ChartTitle = {
@@ -34,7 +34,7 @@ const createStatsTemplate = () => (
   </section>`
 );
 
-const getLabel = (pointName) => `${String.fromCodePoint(pointTypes[pointName].emoji)}${pointName} `;
+const getLabel = (pointName) => `${String.fromCodePoint(POINT_TYPES[pointName].emoji)}${pointName} `;
 
 const getSortData = (data) => {
   const sortData = {
