@@ -212,21 +212,6 @@ export default class Form extends AbstractSmartComponent {
     this._applyFlatpickr();
   }
 
-  setSubmitHandler(handler) {
-    this.getElement().addEventListener(`submit`, handler);
-    this._submitHandler = handler;
-  }
-
-  setDeleteBtnClickHandler(handler) {
-    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, handler);
-    this._deleteBtnClickHandler = handler;
-  }
-
-  setRollupBtnClickHandler(handler) {
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
-    this._rollupBtnClickHanlder = handler;
-  }
-
   _favoriteBtnClickHandler() {
     this._eventIsFavorite = !this._eventIsFavorite;
 
@@ -348,5 +333,20 @@ export default class Form extends AbstractSmartComponent {
     element.querySelector(`.event__favorite-btn`).addEventListener(`click`, debounce(this._favoriteBtnClickHandler));
 
     element.addEventListener(`click`, this._offerChangeHandler);
+  }
+
+  setSubmitHandler(handler) {
+    this.getElement().addEventListener(`submit`, handler);
+    this._submitHandler = handler;
+  }
+
+  setDeleteBtnClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, handler);
+    this._deleteBtnClickHandler = handler;
+  }
+
+  setRollupBtnClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
+    this._rollupBtnClickHanlder = handler;
   }
 }
