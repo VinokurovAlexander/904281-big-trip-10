@@ -4,12 +4,7 @@ import {render, RenderPosition, replace, remove} from "../utils/render";
 import {isEscEvent} from "../utils/esc-key";
 import he from "he";
 import Point from "../models/point";
-
-const Mode = {
-  DEFAULT: `default`,
-  EDIT: `edit`,
-  ADDING: `adding`
-};
+import {Mode} from "../const";
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 const OFFER_FROM_DATA_SPLICE_INDEX = 12;
@@ -100,7 +95,7 @@ export default class PointController {
     this._mode = mode;
 
     this._pointComponent = new PointComponent(point);
-    this._pointEditComponent = new Form(point, data.destinations, data.offers);
+    this._pointEditComponent = new Form(point, data.destinations, data.offers, this._mode);
 
     this._pointComponent.setOpenFormHandler(() => {
       this._replacePointToEdit();
@@ -125,7 +120,7 @@ export default class PointController {
 
     this._pointEditComponent.setDeleteBtnClickHandler(() => {
       this._pointEditComponent.setData({
-        deleteBtnText: `Deleting...`
+        deleteBtnText: this._mode !== Mode.ADDING ? `Deleting...` : `Canceling...`
       });
       this._pointEditComponent.disableButtons(true);
       this._onDataChange(this, point, null);

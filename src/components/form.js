@@ -8,10 +8,18 @@ import {flatpickrInit} from "../utils/flatpickr";
 import moment from "moment";
 import {debounce} from "../utils/debounce";
 import {getEventType} from "../models/point";
+import {Mode} from "../const";
 
 const defaultData = {
   deleteBtnText: `Delete`,
   submitBtnText: `Save`
+};
+
+const getDefaultData = (mode) => {
+  return {
+    deleteBtnText: mode === Mode.DEFAULT ? `Delete` : `Cancel`,
+    submitBtnText: `Save`
+  };
 };
 
 const getOffersCopy = (offers) => {
@@ -19,7 +27,7 @@ const getOffersCopy = (offers) => {
 };
 
 export default class Form extends AbstractSmartComponent {
-  constructor(event, destinations, allOffers) {
+  constructor(event, destinations, allOffers, mode) {
     super();
 
     this._event = event;
@@ -32,10 +40,11 @@ export default class Form extends AbstractSmartComponent {
     this._eventEnd = this._event.calendar.end;
     this._eventPrice = this._event.price;
 
-    this._externalData = defaultData;
-
     this.destinations = destinations;
     this.allOffers = allOffers;
+    this._mode = mode;
+
+    this._externalData = getDefaultData(this._mode);
 
     this.id = event.id;
 

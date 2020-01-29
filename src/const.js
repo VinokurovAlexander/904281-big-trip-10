@@ -6,6 +6,12 @@ export const SortTypes = {
   PRICE: `Price`
 };
 
+export const Mode = {
+  DEFAULT: `default`,
+  EDIT: `edit`,
+  ADDING: `adding`
+};
+
 export const pointTypes = {
   'taxi': {
     name: `taxi`,
