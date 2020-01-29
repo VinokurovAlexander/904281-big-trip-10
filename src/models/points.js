@@ -35,6 +35,15 @@ export default class PointsModel {
     this._offers = Array.from(offers);
   }
 
+  setFilter(filter) {
+    this._activeFilter = filter;
+    this._filterChangeHandler.forEach((handler) => handler());
+  }
+
+  addPoint(point) {
+    this._points.unshift(point);
+  }
+
   updatePoint(id, newPoint) {
     const index = this._points.findIndex((it) => it.id === id);
 
@@ -59,16 +68,7 @@ export default class PointsModel {
     return true;
   }
 
-  setFilter(filter) {
-    this._activeFilter = filter;
-    this._filterChangeHandler.forEach((handler) => handler());
-  }
-
   setFilterChangeHandler(handler) {
     this._filterChangeHandler.push(handler);
-  }
-
-  addPoint(point) {
-    this._points.unshift(point);
   }
 }

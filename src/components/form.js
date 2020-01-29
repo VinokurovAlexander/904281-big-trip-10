@@ -199,10 +199,6 @@ export default class Form extends AbstractSmartComponent {
     );
   }
 
-  getTemplate() {
-    return this._createEditPointFormTemplate(defaultData);
-  }
-
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
     this._submitHandler = handler;
@@ -348,5 +344,9 @@ export default class Form extends AbstractSmartComponent {
 
   disableButtons(flag) {
     this.getElement().querySelectorAll(`button`).forEach((btn) => (btn.disabled = flag));
+  }
+
+  getTemplate() {
+    return this._createEditPointFormTemplate(defaultData);
   }
 }

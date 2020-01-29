@@ -34,7 +34,6 @@ export default class TripControlsTab extends AbstractComponent {
     this._subscribeOnEvents();
   }
 
-
   getTemplate() {
     return createTripControlsTabsTemplate();
   }

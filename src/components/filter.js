@@ -33,10 +33,6 @@ export default class FilterComponent extends AbstractComponent {
     this._activeFitler = activeFilter;
   }
 
-  getTemplate() {
-    return createTripFiltersListTemplate(this._activeFitler);
-  }
-
   setFilterChangeHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       if (evt.target.tagName === `LABEL`) {
@@ -44,5 +40,9 @@ export default class FilterComponent extends AbstractComponent {
         handler(filter);
       }
     });
+  }
+
+  getTemplate() {
+    return createTripFiltersListTemplate(this._activeFitler);
   }
 }
