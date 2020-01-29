@@ -44,6 +44,10 @@ export default class Api {
     return this._getData(`offers`);
   }
 
+  addPoint(data) {
+    return this._addData(Method.POST, data);
+  }
+
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
@@ -67,10 +71,6 @@ export default class Api {
 
   updatePoint(id, data) {
     return this._addData(Method.PUT, data, id);
-  }
-
-  addPoint(data) {
-    return this._addData(Method.POST, data);
   }
 
   deletePoint(id) {

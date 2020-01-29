@@ -66,10 +66,13 @@ export default class Form extends AbstractSmartComponent {
     this._subscribeOnEvents();
   }
 
-  rerender() {
-    super.rerender();
+  setData(data) {
+    this._externalData = Object.assign({}, getDefaultData(this._mode), data);
+    this.rerender();
+  }
 
-    this._applyFlatpickr();
+  getData() {
+    return new FormData(this.getElement());
   }
 
   _createPointTypesList() {
@@ -199,6 +202,16 @@ export default class Form extends AbstractSmartComponent {
     );
   }
 
+  getTemplate() {
+    return this._createEditPointFormTemplate(defaultData);
+  }
+
+  rerender() {
+    super.rerender();
+
+    this._applyFlatpickr();
+  }
+
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
     this._submitHandler = handler;
@@ -212,26 +225,6 @@ export default class Form extends AbstractSmartComponent {
   setRollupBtnClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
     this._rollupBtnClickHanlder = handler;
-  }
-
-  _subscribeOnEvents() {
-    const element = this.getElement();
-
-    element.querySelector(`.event__type-list`).addEventListener(`click`, this._eventTypeChangeHandler);
-
-    element.querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
-
-    Array.from(element.querySelectorAll(`.event__input--time`)).map((dateElement) => {
-      dateElement.addEventListener(`change`, this._dateChangeHandler);
-    });
-
-    element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
-      this._eventPrice = evt.target.value;
-    });
-
-    element.querySelector(`.event__favorite-btn`).addEventListener(`click`, debounce(this._favoriteBtnClickHandler));
-
-    element.addEventListener(`click`, this._offerChangeHandler);
   }
 
   _favoriteBtnClickHandler() {
@@ -295,13 +288,6 @@ export default class Form extends AbstractSmartComponent {
     }
   }
 
-  recoveryListeners() {
-    this.setSubmitHandler(this._submitHandler);
-    this.setDeleteBtnClickHandler(this._deleteBtnClickHandler);
-    this.setRollupBtnClickHandler(this._rollupBtnClickHanlder);
-    this._subscribeOnEvents();
-  }
-
   reset() {
     const event = this._event;
 
@@ -315,10 +301,6 @@ export default class Form extends AbstractSmartComponent {
     this._eventOffers = event.offers;
 
     this.rerender();
-  }
-
-  getData() {
-    return new FormData(this.getElement());
   }
 
   _applyFlatpickr() {
@@ -337,16 +319,34 @@ export default class Form extends AbstractSmartComponent {
     this._flatpickr.end = flatpickrInit(eventEnd, this._eventEnd);
   }
 
-  setData(data) {
-    this._externalData = Object.assign({}, defaultData, data);
-    this.rerender();
-  }
-
   disableButtons(flag) {
     this.getElement().querySelectorAll(`button`).forEach((btn) => (btn.disabled = flag));
   }
 
-  getTemplate() {
-    return this._createEditPointFormTemplate(defaultData);
+  recoveryListeners() {
+    this.setSubmitHandler(this._submitHandler);
+    this.setDeleteBtnClickHandler(this._deleteBtnClickHandler);
+    this.setRollupBtnClickHandler(this._rollupBtnClickHanlder);
+    this._subscribeOnEvents();
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelector(`.event__type-list`).addEventListener(`click`, this._eventTypeChangeHandler);
+
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
+
+    Array.from(element.querySelectorAll(`.event__input--time`)).map((dateElement) => {
+      dateElement.addEventListener(`change`, this._dateChangeHandler);
+    });
+
+    element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
+      this._eventPrice = evt.target.value;
+    });
+
+    element.querySelector(`.event__favorite-btn`).addEventListener(`click`, debounce(this._favoriteBtnClickHandler));
+
+    element.addEventListener(`click`, this._offerChangeHandler);
   }
 }
