@@ -26,11 +26,6 @@ export default class Api {
     this._authorization = authorization;
   }
 
-  _getData(address) {
-    return this._load({url: address})
-      .then((response) => response.json());
-  }
-
   getPoints() {
     return this._getData(`points`)
       .then(Point.parsePoints);
@@ -88,5 +83,10 @@ export default class Api {
     })
       .then((response) => response.json())
       .then(Point.parsePoint);
+  }
+
+  _getData(address) {
+    return this._load({url: address})
+      .then((response) => response.json());
   }
 }

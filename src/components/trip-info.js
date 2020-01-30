@@ -10,6 +10,21 @@ export default class TripInfo extends AbstractComponent {
     this._points = points;
   }
 
+  getTemplate() {
+    return this._createTripInfoTemplate();
+  }
+
+  _createTripInfoTemplate() {
+    const data = this._getData();
+
+    return (
+      `<div class="trip-info__main">
+      <h1 class="trip-info__title">${data.title}</h1>
+      <p class="trip-info__dates">${data.date}</p>
+    </div>`
+    );
+  }
+
   _getData() {
     const data = {
       title: ``,
@@ -26,20 +41,5 @@ export default class TripInfo extends AbstractComponent {
     ${moment(this._points[lastIndex].calendar.start).format(`D MMM`)}`;
 
     return data;
-  }
-
-  getTemplate() {
-    return this._createTripInfoTemplate();
-  }
-
-  _createTripInfoTemplate() {
-    const data = this._getData();
-
-    return (
-      `<div class="trip-info__main">
-      <h1 class="trip-info__title">${data.title}</h1>
-      <p class="trip-info__dates">${data.date}</p>
-    </div>`
-    );
   }
 }
